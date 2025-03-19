@@ -1,0 +1,229 @@
+-- insert commands for example/presentation only --
+
+-- Ensure the first image (No-Image-Provided or just 'BLOB' for new accounts and accounts that does not provide any image yet)
+-- gets Image_ID = 1
+INSERT INTO Account_Image (Image) 
+VALUES ('No-Image-Provided');
+
+INSERT INTO Account_Type (Type_name) VALUES ('Admin'), ('Staff'), ('Cashier');
+
+INSERT INTO Position_List (Position_name, Salary) VALUES 
+('Owner', 5000.00), ('Manager', 3000.00), ('Staff', 2000.00), ('Cashier', 2000.00);
+
+
+-- Ensure Food Categories Exist
+CALL AddNewCategory('Main Course', 'Food');
+CALL AddNewCategory('Side Dish', 'Food');
+CALL AddNewCategory('Fast Food', 'Food');
+CALL AddNewCategory('Healthy', 'Food');
+
+-- Ensure Drink Categories Exist
+CALL AddNewCategory('Soda', 'Drink');
+CALL AddNewCategory('Juice', 'Drink');
+CALL AddNewCategory('Milkshake', 'Drink');
+CALL AddNewCategory('Hot Beverages', 'Drink');
+
+-- Ensure Dessert Categories Exist
+CALL AddNewCategory('Cake', 'Dessert');
+CALL AddNewCategory('Ice Cream', 'Dessert');
+CALL AddNewCategory('Pastry', 'Dessert');
+
+-- Insert Food Items
+CALL AddNewProduct('Food', 1, 'Burger', 'Delicious beef burger', 5.99, 'BURGER001', NULL);
+CALL AddNewProduct('Food', 2, 'Pizza', 'Cheesy Pepperoni Pizza', 8.99, 'PIZZA001', NULL);
+CALL AddNewProduct('Food', 3, 'Pasta', 'Creamy Alfredo Pasta', 7.49, 'PASTA001', NULL);
+CALL AddNewProduct('Food', 4, 'Salad', 'Fresh Green Salad', 4.99, 'SALAD001', NULL);
+
+-- Insert Drink Items
+CALL AddNewProduct('Drink', 1, 'Coca-Cola', 'Refreshing Cola', 2.99, 'COKE001', NULL);
+CALL AddNewProduct('Drink', 1, 'Pepsi', 'Classic Pepsi', 2.99, 'PEPSI001', NULL);
+CALL AddNewProduct('Drink', 2, 'Orange Juice', 'Fresh Orange Juice', 3.49, 'OJ001', NULL);
+CALL AddNewProduct('Drink', 2, 'Apple Juice', 'Fresh Apple Juice', 3.49, 'AJ001', NULL);
+CALL AddNewProduct('Drink', 3, 'Chocolate Milkshake', 'Rich Chocolate Shake', 4.99, 'SHAKE001', NULL);
+CALL AddNewProduct('Drink', 3, 'Strawberry Milkshake', 'Fresh Strawberry Shake', 4.99, 'SHAKE002', NULL);
+CALL AddNewProduct('Drink', 4, 'Coffee', 'Strong Black Coffee', 2.49, 'COFFEE001', NULL);
+CALL AddNewProduct('Drink', 4, 'Green Tea', 'Healthy Green Tea', 2.99, 'TEA001', NULL);
+
+-- Insert Dessert Items
+CALL AddNewProduct('Dessert', 1, 'Chocolate Cake', 'Rich Chocolate Cake', 5.99, 'CAKE001', NULL);
+CALL AddNewProduct('Dessert', 1, 'Cheesecake', 'Creamy Cheesecake', 6.49, 'CAKE002', NULL);
+CALL AddNewProduct('Dessert', 2, 'Vanilla Ice Cream', 'Classic Vanilla Ice Cream', 3.99, 'ICECREAM001', NULL);
+CALL AddNewProduct('Dessert', 2, 'Chocolate Ice Cream', 'Rich Chocolate Ice Cream', 3.99, 'ICECREAM002', NULL);
+CALL AddNewProduct('Dessert', 3, 'Croissant', 'Buttery Croissant', 2.99, 'PASTRY001', NULL);
+CALL AddNewProduct('Dessert', 3, 'Danish Pastry', 'Sweet Danish Pastry', 3.49, 'PASTRY002', NULL);
+
+-- Ensure Combo Categories Exist
+CALL AddNewCategory('Meal Combo', 'Combo');
+CALL AddNewCategory('Family Combo', 'Combo');
+
+-- Insert Combo Items (Fixed: Added Code_Name)
+CALL AddNewComboList(1, 'MEAL_COMBO_1', 'Burger with Fries and Drink', 9.99, NULL);
+CALL AddNewComboList(1, 'MEAL_COMBO_2', 'Pizza with Garlic Bread and Soda', 12.99, NULL);
+CALL AddNewComboList(1, 'MEAL_COMBO_3', 'Pasta with Side Salad and Juice', 10.49, NULL);
+CALL AddNewComboList(2, 'FAMILY_COMBO', 'Family Meal (4 Burgers + Fries + 4 Drinks)', 29.99, NULL);
+
+-- Add Food, Drink, and Dessert to Combos (Fixed: Uses correct Combo_List_IDs)
+CALL AddNewComboOrganizer(1, 1, 'Food');   -- Burger to Meal Combo 1
+CALL AddNewComboOrganizer(1, 5, 'Drink');  -- Coca-Cola to Meal Combo 1
+
+CALL AddNewComboOrganizer(2, 2, 'Food');   -- Pizza to Meal Combo 2
+CALL AddNewComboOrganizer(2, 6, 'Drink');  -- Pepsi to Meal Combo 2
+
+CALL AddNewComboOrganizer(3, 3, 'Food');   -- Pasta to Meal Combo 3
+CALL AddNewComboOrganizer(3, 7, 'Drink');  -- Orange Juice to Meal Combo 3
+CALL AddNewComboOrganizer(3, 9, 'Dessert'); -- Chocolate Cake to Meal Combo 3
+
+CALL AddNewComboOrganizer(4, 1, 'Food');   -- Burger to Family Combo
+CALL AddNewComboOrganizer(4, 5, 'Drink');  -- Coca-Cola to Family Combo
+CALL AddNewComboOrganizer(4, 3, 'Food');   -- Pasta to Family Combo
+CALL AddNewComboOrganizer(4, 9, 'Dessert'); -- Cheesecake to Family Combo
+
+CALL InsertAccount(
+    1,  -- Admin Type
+    'Owner',  -- Position Name
+    NULL,  -- No Image Provided (Defaults to 0)
+    'John', 'A', 'Doe', 
+    'johndoe', 'pass123'
+);
+
+CALL InsertAccount(
+    2,  -- Staff Type
+    'Manager',  -- Position Name
+    NULL,  -- No Image Provided (Defaults to 0)
+    'Jane', 'B', 'Smith', 
+    'janesmith', 'pass456'
+);
+
+CALL InsertAccount(
+    2,  -- Staff Type
+    'Staff',  -- Position Name
+    NULL,  -- No Image Provided (Defaults to 0)
+    'Mike', 'C', 'Johnson', 
+    'mikejohnson', 'pass789'
+);
+
+CALL InsertAccount(
+    3,  -- Cashier Type
+    'Cashier',  -- Position Name
+    NULL,  -- No Image Provided (Defaults to 0)
+    'Alice', 'D', 'Williams', 
+    'alicewilliams', 'pass999'
+);
+
+INSERT INTO Action_Type (Typename) VALUES 
+('Login'), ('Logout'), ('Create Account'), ('Update Account'), ('Delete Account'), 
+('Place Order'), ('Update Order'), ('Cancel Order'), ('Generate Report'), ('System Error');
+
+INSERT INTO Affected_Table (Table_name) VALUES 
+('Accounts'), ('Position_List'), ('Ordered_Logs'), ('Ordered_Items'), ('Discount_Table'), 
+('Food_List'), ('Drink_List'), ('Dessert_List'), ('Combo_List'), ('Activity_Log');
+
+INSERT INTO Activity_Log (Account_ID, Action_Type_ID, Affected_Table_ID, Affected_Row_ID, Details)
+VALUES 
+(1, 1, 1, 1, 'John Doe logged in'),
+(1, 2, NULL, NULL, 'John Doe logged out'),
+(1, 3, 1, 2, 'Created account for Jane Smith'),
+(1, 4, 1, 3, 'Updated account details for Mike Johnson'),
+(2, 6, 3, 5, 'Jane Smith placed an order'),
+(2, 7, 3, 5, 'Jane Smith updated order details'),
+(3, 8, 3, 6, 'Mike Johnson canceled an order'),
+(3, 9, 9, NULL, 'Mike Johnson generated a sales report'),
+(1, 5, 1, 3, 'Deleted an account (ID 3)'),
+(3, 10, NULL, NULL, 'System error encountered by Mike Johnson');
+
+INSERT INTO Discount_Table (Discount_Name, Discount_Percent) VALUES 
+('No Discount', 0.00), 
+('VIP Discount', 10.00), 
+('Promo Discount', 5.00);
+
+INSERT INTO Ordered_Logs (Transaction_ID, Discount_ID, Total_Price, Date_Time)
+VALUES 
+('TXN001', 1, 500.00, NOW()),
+('TXN002', 2, 450.00, NOW()),
+('TXN003', 1, 300.00, NOW()),
+('TXN004', 3, 280.00, NOW()),
+('TXN005', 1, 600.00, NOW()),
+('TXN006', 1, 720.00, NOW()),
+('TXN007', 2, 550.00, NOW()),
+('TXN008', 3, 400.00, NOW()),
+('TXN009', 1, 350.00, NOW()),
+('TXN010', 2, 500.00, NOW()),
+('TXN011', 1, 800.00, DATE_SUB(NOW(), INTERVAL 6 DAY)),  -- 6 days ago
+('TXN012', 2, 950.00, DATE_SUB(NOW(), INTERVAL 5 DAY)),  -- 5 days ago
+('TXN013', 1, 1200.00, DATE_SUB(NOW(), INTERVAL 4 DAY)), -- 4 days ago
+('TXN014', 3, 750.00, DATE_SUB(NOW(), INTERVAL 3 DAY)),  -- 3 days ago
+('TXN015', 1, 1100.00, DATE_SUB(NOW(), INTERVAL 2 DAY)), -- 2 days ago
+('TXN016', 1, 1500.00, DATE_SUB(NOW(), INTERVAL 1 DAY)), -- Yesterday
+('TXN017', 2, 2000.00, NOW()), -- Today
+('TXN018', 3, 500.00, NOW()), -- Today
+('TXN019', 1, 1300.00, NOW()), -- Today
+('TXN020', 2, 1750.00, NOW()); -- Today
+
+INSERT INTO Ordered_Items (Or_Logs_ID, Item_ID, Item_Type, Quantity)
+VALUES 
+(1, 1, 'Food', 2),
+(2, 2, 'Drink', 1),
+(3, 3, 'Dessert', 3),
+(4, 4, 'Combo', 1),
+(5, 1, 'Food', 5),
+(6, 2, 'Drink', 2),
+(7, 3, 'Dessert', 2),
+(8, 4, 'Combo', 3),
+(9, 1, 'Food', 1),
+(10, 2, 'Drink', 4),
+(11, 1, 'Food', 3),
+(12, 2, 'Drink', 2),
+(13, 3, 'Dessert', 4),
+(14, 4, 'Combo', 2),
+(15, 1, 'Food', 6),
+(16, 2, 'Drink', 5),
+(17, 3, 'Dessert', 7),
+(18, 4, 'Combo', 8),
+(19, 1, 'Food', 4),
+(20, 2, 'Drink', 6);
+
+-- Insert daily sales (last 10 days)
+INSERT INTO Ordered_Logs (Transaction_ID, Discount_ID, Total_Price, Date_Time) VALUES
+('TXN1001', NULL, 1500.00, DATE_SUB(CURDATE(), INTERVAL 1 DAY)),
+('TXN1002', 1, 1200.50, DATE_SUB(CURDATE(), INTERVAL 2 DAY)),
+('TXN1003', NULL, 1800.75, DATE_SUB(CURDATE(), INTERVAL 3 DAY)),
+('TXN1004', 2, 1600.25, DATE_SUB(CURDATE(), INTERVAL 4 DAY)),
+('TXN1005', NULL, 1400.90, DATE_SUB(CURDATE(), INTERVAL 5 DAY)),
+('TXN1006', 3, 1750.00, DATE_SUB(CURDATE(), INTERVAL 6 DAY)),
+('TXN1007', NULL, 1550.35, DATE_SUB(CURDATE(), INTERVAL 7 DAY)),
+('TXN1008', 1, 1650.80, DATE_SUB(CURDATE(), INTERVAL 8 DAY)),
+('TXN1009', NULL, 1300.60, DATE_SUB(CURDATE(), INTERVAL 9 DAY)),
+('TXN1010', 2, 1900.10, DATE_SUB(CURDATE(), INTERVAL 10 DAY));
+
+-- Insert weekly sales (last 10 weeks)
+INSERT INTO Ordered_Logs (Transaction_ID, Discount_ID, Total_Price, Date_Time) VALUES
+('TXN2001', 2, 10500.00, DATE_SUB(CURDATE(), INTERVAL 1 WEEK)),
+('TXN2002', NULL, 9800.75, DATE_SUB(CURDATE(), INTERVAL 2 WEEK)),
+('TXN2003', 1, 11200.25, DATE_SUB(CURDATE(), INTERVAL 3 WEEK)),
+('TXN2004', NULL, 9900.50, DATE_SUB(CURDATE(), INTERVAL 4 WEEK)),
+('TXN2005', 3, 10750.90, DATE_SUB(CURDATE(), INTERVAL 5 WEEK)),
+('TXN2006', NULL, 10350.30, DATE_SUB(CURDATE(), INTERVAL 6 WEEK)),
+('TXN2007', 1, 10800.60, DATE_SUB(CURDATE(), INTERVAL 7 WEEK)),
+('TXN2008', NULL, 9500.80, DATE_SUB(CURDATE(), INTERVAL 8 WEEK)),
+('TXN2009', 2, 10100.40, DATE_SUB(CURDATE(), INTERVAL 9 WEEK)),
+('TXN2010', NULL, 11000.90, DATE_SUB(CURDATE(), INTERVAL 10 WEEK));
+
+-- Insert monthly sales (last 12 months)
+INSERT INTO Ordered_Logs (Transaction_ID, Discount_ID, Total_Price, Date_Time) VALUES
+('TXN3001', NULL, 42500.00, DATE_SUB(CURDATE(), INTERVAL 1 MONTH)),
+('TXN3002', 2, 39000.75, DATE_SUB(CURDATE(), INTERVAL 2 MONTH)),
+('TXN3003', 1, 44500.25, DATE_SUB(CURDATE(), INTERVAL 3 MONTH)),
+('TXN3004', NULL, 41000.50, DATE_SUB(CURDATE(), INTERVAL 4 MONTH)),
+('TXN3005', 3, 43500.90, DATE_SUB(CURDATE(), INTERVAL 5 MONTH)),
+('TXN3006', NULL, 42000.30, DATE_SUB(CURDATE(), INTERVAL 6 MONTH)),
+('TXN3007', 1, 45500.60, DATE_SUB(CURDATE(), INTERVAL 7 MONTH)),
+('TXN3008', NULL, 40000.80, DATE_SUB(CURDATE(), INTERVAL 8 MONTH)),
+('TXN3009', 2, 41800.40, DATE_SUB(CURDATE(), INTERVAL 9 MONTH)),
+('TXN3010', NULL, 44000.90, DATE_SUB(CURDATE(), INTERVAL 10 MONTH)),
+('TXN3011', 3, 46000.00, DATE_SUB(CURDATE(), INTERVAL 11 MONTH)),
+('TXN3012', NULL, 47000.75, DATE_SUB(CURDATE(), INTERVAL 12 MONTH));
+
+-- Insert yearly sales (last 2 years)
+INSERT INTO Ordered_Logs (Transaction_ID, Discount_ID, Total_Price, Date_Time) VALUES
+('TXN4001', NULL, 520000.00, DATE_SUB(CURDATE(), INTERVAL 1 YEAR)),
+('TXN4002', 2, 510000.75, DATE_SUB(CURDATE(), INTERVAL 2 YEAR));
