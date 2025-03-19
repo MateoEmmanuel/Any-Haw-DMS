@@ -1,0 +1,226 @@
+CREATE DATABASE IF NOT EXISTS anyhaw;
+USE anyhaw;
+
+-- Account Module --
+-- account management part --
+CREATE TABLE Account_Type (
+    Type_ID INT PRIMARY KEY Auto_Increment,
+    Type_name VARCHAR(15) NOT NULL
+);
+
+CREATE TABLE Position_List (
+    Position_ID INT PRIMARY KEY Auto_Increment,
+    Position_name VARCHAR(100) NOT NULL,
+    Salary DECIMAL(10,2) NOT NULL
+);
+
+CREATE TABLE Account_Image (
+    Image_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Image LONGBLOB NOT NULL
+);
+
+
+CREATE TABLE Accounts (
+    Account_ID INT PRIMARY KEY Auto_Increment,
+    Type_ID INT Not Null,
+    Position_ID INT Not Null,
+    Image_ID INT not Null,
+    FirstName VARCHAR(255) NOT NULL,
+    MiddleName VARCHAR(255),
+    LastName VARCHAR(255) NOT NULL,
+    Username VARCHAR(255) NOT NULL UNIQUE,
+    Password VARCHAR(255) NOT NULL,
+    FOREIGN KEY (Type_ID) REFERENCES Account_Type(Type_ID),
+    FOREIGN KEY (Position_ID) REFERENCES Position_List(Position_ID),
+    FOREIGN KEY (Image_ID) REFERENCES Account_Image(Image_ID)
+);
+
+-- account log part --
+CREATE TABLE Action_Type (
+    Action_Type_ID INT PRIMARY KEY Auto_Increment,
+    Typename VARCHAR(15) NOT NULL Unique
+);
+
+Create Table Affected_Table(
+Affected_Table_ID INT Primary Key Auto_Increment,
+Table_name VARCHAR(15) Not Null Unique
+);
+
+CREATE TABLE Activity_Log (
+    Log_ID INT PRIMARY KEY Auto_Increment,
+    Account_ID INT Not Null,
+    Date_Time DATETIME NOT NULL default current_timestamp,
+    Action_Type_ID INT Not Null,
+    Affected_Table_ID INT default null,
+    Affected_Row_ID INT default null,
+    Details TEXT,
+    FOREIGN KEY (Account_ID) REFERENCES Accounts(Account_ID),
+    FOREIGN KEY (Action_Type_ID) REFERENCES Action_Type(Action_Type_ID),
+    FOREIGN KEY (Affected_Table_ID) REFERENCES Affected_Table(Affected_Table_ID)
+);
+
+
+-- Menu Module --
+CREATE TABLE Image_List (
+    Image_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Image LONGBLOB NOT NULL
+);
+
+CREATE TABLE Food_Category (
+    F_Category_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Category_Name VARCHAR(100) NOT NULL Unique
+);
+
+CREATE TABLE Food_List (
+    Food_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Food_Name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE Normal_Food_List (
+    N_List_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Food_ID INT Not Null Unique,
+    F_Category_ID INT Not Null,
+    Image_ID INT Not Null Unique,
+    Description Varchar(50) Default Null,
+    Price DECIMAL(10,2) NOT NULL,
+    Code_Name VARCHAR(50) Not Null Unique,
+    FOREIGN KEY (Food_ID) REFERENCES Food_List(Food_ID),
+    FOREIGN KEY (F_Category_ID) REFERENCES Food_Category(F_Category_ID),
+    FOREIGN KEY (Image_ID) REFERENCES Image_List(Image_ID)
+);
+
+CREATE TABLE Drink_Category (
+    Dr_Category_ID INT PRIMARY KEY auto_increment,
+    Category_Name VARCHAR(100) NOT NULL Unique
+);
+
+CREATE TABLE Drink_List (
+    Drink_ID INT PRIMARY KEY auto_increment,
+    Dr_Category_ID INT Not null,
+    Image_ID INT Not Null Unique,
+    Drink_Name VARCHAR(150) NOT NULL,
+    Code_Name VARCHAR(25) Not null unique,
+    Price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (Dr_Category_ID) REFERENCES Drink_Category(Dr_Category_ID),
+    FOREIGN KEY (Image_ID) REFERENCES Image_List(Image_ID)
+);
+
+CREATE TABLE Dessert_Category (
+    De_Category_ID INT PRIMARY KEY auto_increment,
+    Category_Name VARCHAR(100) NOT NULL unique
+);
+
+CREATE TABLE Dessert_List (
+    Dessert_ID INT PRIMARY KEY auto_increment,
+    De_Category_ID INT Not Null,
+    Image_ID INT Not Null Unique,
+    Dessert_Name VARCHAR(100) NOT NULL,
+    Code_Name VARCHAR(50) Not Null unique,
+    Price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (De_Category_ID) REFERENCES Dessert_Category(De_Category_ID),
+    FOREIGN KEY (Image_ID) REFERENCES Image_List(Image_ID)
+);
+
+CREATE TABLE Combo_Category (
+    C_Category_ID INT PRIMARY KEY auto_increment,
+    Category_Name VARCHAR(100) NOT NULL Unique
+);
+
+CREATE TABLE Combo_Food_Details (
+    C_Details_ID INT PRIMARY KEY auto_increment,
+    Image_ID INT Not Null Unique,
+    Description TEXT Not Null,
+    Price Decimal(10,2) Not Null,
+    FOREIGN KEY (Image_ID) REFERENCES Image_List(Image_ID)
+);
+
+CREATE TABLE Combo_Food_List (
+    Combo_List_ID INT PRIMARY KEY auto_increment,
+    C_Category_ID INT Not Null,
+    C_Details_ID INT Not Null,
+    Code_Name VARCHAR(50) Not Null Unique,
+    FOREIGN KEY (C_Category_ID) REFERENCES Combo_Category(C_Category_ID),
+    FOREIGN KEY (C_Details_ID) REFERENCES Combo_Food_Details(C_Details_ID)
+);
+
+CREATE TABLE Combo_Food_Organizer (
+    Combo_Food_ID INT PRIMARY KEY auto_increment,
+    Item_ID INT Not Null,
+    Item_Type ENUM("Food","Drink","Dessert") Not Null,
+    Combo_List_ID VARCHAR(50) Not Null
+);
+
+-- ordering module --
+CREATE TABLE Discount_Table (
+    Discount_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Discount_Name VARCHAR(255) UNIQUE NOT NULL,
+    Discount_Percent DECIMAL(5,2) NOT NULL
+);
+
+CREATE TABLE Ordered_Logs (
+    Or_Logs_ID INT PRIMARY KEY auto_increment,
+    Transaction_ID VARCHAR(50) NOT NULL,
+    Customer_Name VARCHAR(50) DEFAULT NULL,
+    Discount_ID INT default null,
+    Discount_Percent DECIMAL(10,2) default null,
+    Total_Price DECIMAL(10,2) NOT NULL,
+    Date_Time DATETIME NOT NULL default Current_timestamp,
+    FOREIGN KEY (Discount_ID) REFERENCES Discount_Table(Discount_ID),
+    FOREIGN KEY (Discount_Percent) REFERENCES Discount_Table(Discount_Percent)
+);
+
+CREATE TABLE Ordered_Items (
+    Or_Items_ID INT PRIMARY KEY auto_increment,
+    Or_Logs_ID INT Not Null,
+    Item_ID INT NOT NULL,
+    Item_Type ENUM('Food','Combo','Dessert','Drink') NOT NULL,
+    Quantity INT NOT NULL,
+    FOREIGN KEY (Or_Logs_ID) REFERENCES Ordered_Logs(Or_Logs_ID)
+);
+
+Create Table Database_Log(
+	Log_ID int primary key Auto_Increment,
+    Table_Name Text Not Null,
+    Table_Log_ID Int Not Null
+);
+
+Create Table Image_Action_Log(
+	Image_Log_ID INT primary key Auto_Increment,
+    Affected_Data_ID int not null,
+    Action_Type ENUM("ADD","UPDATE","DELETE") NOT NULL,
+    Old_Data text not null,
+    New_Date text not null,
+    Date_Time DATETIME not null default CURRENT_TIMESTAMP,
+	Foreign Key (Affected_Data_ID) References Image_list(Image_ID)
+);
+
+Create Table Discount_Action_Log(
+	Discount_Log_ID INT primary key Auto_Increment,
+    Affected_Data_ID int not null,
+    Action_Type ENUM("ADD","UPDATE","DELETE") NOT NULL,
+    Old_Data text not null,
+    New_Date text not null,
+    Date_Time DATETIME not null default CURRENT_TIMESTAMP,
+    Foreign Key (Affected_Data_ID) References Discount_Table(Discount_ID)
+);
+
+Create Table Position_Action_Log(
+	Position_Log_ID INT primary key Auto_Increment,
+    Affected_Data_ID int not null,
+    Action_Type ENUM("ADD","UPDATE","DELETE") NOT NULL,
+    Old_Data text not null,
+    New_Date text not null,
+    Date_Time DATETIME not null default CURRENT_TIMESTAMP,
+    Foreign Key (Affected_Data_ID) References Positon_List(Position_ID)
+);
+
+Create Table Menu_Action_Log(
+	Menu_Log_ID INT primary key Auto_Increment,
+    Affected_Table_Name text not null,
+    Affected_Data_ID int not null,
+    Action_Type ENUM("ADD","UPDATE","DELETE") NOT NULL,
+    Old_Data text not null,
+    New_Date text not null,
+    Date_Time DATETIME not null default CURRENT_TIMESTAMP
+);
+
