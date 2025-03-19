@@ -1,0 +1,24 @@
+-- Account Report --
+CALL AccountReport();
+
+-- Activity Log Report --
+CALL ActivityLogReport();
+
+ 
+-- Sales Report --
+Call DailySalesReport();  
+Call WeeklySalesReport(); 
+Call MonthlySalesReport(); 
+Call YearlySalesReport(); 
+CALL SalesReportByDateRange(curdate(), curdate()); -- using Curdate as example date only
+
+-- High Spending Days Report --
+CALL HighSpendingDays_Weekly();
+CALL HighSpendingDays_Monthly();
+CALL HighSpendingDays_Yearly();
+
+-- Top Best Seller Report --
+Call DailyBestSellers();
+Call WeeklyBestSellers();
+Call MonthlyBestSellers();
+Call YearlyBestSellers();
