@@ -14,7 +14,164 @@ BEGIN
         A.Username, 
         P_L.Position_name AS "Position",
         AI.Image AS "Profile_Image"  -- Retrieves image data
+    FROM Accounts A-- Function for Full Name
+DELIMITER //
+CREATE FUNCTION fullname(
+    FirstName VARCHAR(255),
+    MiddleName VARCHAR(255),
+    LastName VARCHAR(255)
+) RETURNS VARCHAR(255) DETERMINISTIC
+BEGIN
+    RETURN TRIM(CONCAT(FirstName, ' ', COALESCE(MiddleName, ''), ' ', LastName));
+END //
+
+-- Staff Account List Report
+CREATE PROCEDURE AccountReport()
+BEGIN
+    SELECT 
+        fullname(A.FirstName, A.MiddleName, A.LastName) AS "Fullname", 
+        A.Username, 
+        P_L.Position_name AS "Position",
+        AI.Image AS "Profile_Image"
     FROM Accounts A
+    JOIN Position_List P_L ON A.Position_ID = P_L.Position_ID
+    LEFT JOIN Account_Image AI ON A.Image_ID = AI.Image_ID;  -- LEFT JOIN to handle NULL images
+END //
+
+-- Activity Log Report
+CREATE PROCEDURE ActivityLogReport()
+BEGIN
+    SELECT 
+        A.Username, 
+        A_L.Date_Time AS "Date & Time", 
+        A_L.Action_Type AS "Activity Type"
+    FROM Activity_Log A_L
+    JOIN Accounts A ON A_L.Account_ID = A.Account_ID;
+END //
+
+-- Top Best Sellers
+CREATE PROCEDURE TopBestSellers(IN startDate DATE, IN endDate DATE)
+BEGIN
+    SELECT * FROM (
+        SELECT OI.Item_ID, FL.Food_Name AS "Item Name", 'Food' AS "Category", SUM(OI.Quantity) AS "Total Sold"
+        FROM Ordered_Items OI
+        JOIN Normal_Food_List NFL ON OI.Item_ID = NFL.N_List_ID
+        JOIN Food_List FL ON NFL.Food_ID = FL.Food_ID
+        JOIN Ordered_Logs OL ON OI.Or_Logs_ID = OL.Or_Logs_ID
+        WHERE OI.Item_Type = 'Food' AND OL.Date_Time BETWEEN startDate AND endDate
+        GROUP BY OI.Item_ID
+        
+        UNION ALL
+        
+        SELECT OI.Item_ID, DL.Drink_Name AS "Item Name", 'Drink' AS "Category", SUM(OI.Quantity) AS "Total Sold"
+        FROM Ordered_Items OI
+        JOIN Drink_List DL ON OI.Item_ID = DL.Drink_ID
+        JOIN Ordered_Logs OL ON OI.Or_Logs_ID = OL.Or_Logs_ID
+        WHERE OI.Item_Type = 'Drink' AND OL.Date_Time BETWEEN startDate AND endDate
+        GROUP BY OI.Item_ID
+        
+        UNION ALL
+        
+        SELECT OI.Item_ID, DSL.Dessert_Name AS "Item Name", 'Dessert' AS "Category", SUM(OI.Quantity) AS "Total Sold"
+        FROM Ordered_Items OI
+        JOIN Dessert_List DSL ON OI.Item_ID = DSL.Dessert_ID
+        JOIN Ordered_Logs OL ON OI.Or_Logs_ID = OL.Or_Logs_ID
+        WHERE OI.Item_Type = 'Dessert' AND OL.Date_Time BETWEEN startDate AND endDate
+        GROUP BY OI.Item_ID
+        
+        UNION ALL
+        
+        SELECT OI.Item_ID, CFL.Code_Name AS "Item Name", 'Combo' AS "Category", SUM(OI.Quantity) AS "Total Sold"
+        FROM Ordered_Items OI
+        JOIN Combo_Food_List CFL ON OI.Item_ID = CFL.Combo_List_ID
+        JOIN Ordered_Logs OL ON OI.Or_Logs_ID = OL.Or_Logs_ID
+        WHERE OI.Item_Type = 'Combo' AND OL.Date_Time BETWEEN startDate AND endDate
+        GROUP BY OI.Item_ID
+    ) AS AllItems
+    ORDER BY `Total Sold` DESC
+    LIMIT 5;
+END //
+
+-- Daily Sales Report
+CREATE PROCEDURE DailySalesReport()
+BEGIN
+    SELECT DATE(Date_Time) AS "Date", COUNT(Or_Logs_ID) AS "Total Orders", SUM(Total_Price) AS "Total Sales"
+    FROM Ordered_Logs
+    GROUP BY DATE(Date_Time);
+END //
+
+-- Monthly Sales Report
+CREATE PROCEDURE MonthlySalesReport()
+BEGIN
+    SELECT DATE_FORMAT(Date_Time, '%Y-%m') AS "Month", COUNT(Or_Logs_ID) AS "Total Orders", SUM(Total_Price) AS "Total Sales"
+    FROM Ordered_Logs
+    WHERE YEAR(Date_Time) = YEAR(CURDATE())
+    GROUP BY DATE_FORMAT(Date_Time, '%Y-%m');
+END //
+
+-- Insert Account Procedure
+CREATE PROCEDURE InsertAccount(    
+    IN p_Type_ID INT,
+    IN p_Position_Name VARCHAR(100),
+    IN p_Image LONGBLOB,
+    IN p_FirstName VARCHAR(255),
+    IN p_MiddleName VARCHAR(255),
+    IN p_LastName VARCHAR(255),
+    IN p_Username VARCHAR(255),
+    IN p_Password VARCHAR(255)
+)
+BEGIN
+    DECLARE p_Position_ID INT;  
+    DECLARE p_Image_ID INT;
+    DECLARE p_UsernameExists INT;
+
+    SELECT Position_ID INTO p_Position_ID FROM Position_List WHERE Position_name = p_Position_Name LIMIT 1;
+
+    IF p_Position_ID IS NULL THEN
+        SELECT 'Error: Position does not exist!' AS Message;
+    ELSE
+        IF p_Image IS NOT NULL THEN
+            INSERT INTO Account_Image (Image) VALUES (p_Image);
+            SET p_Image_ID = LAST_INSERT_ID();
+        ELSE
+            SET p_Image_ID = NULL;
+        END IF;
+
+        SELECT COUNT(*) INTO p_UsernameExists FROM Accounts WHERE Username = p_Username;
+
+        IF p_UsernameExists > 0 THEN
+            SELECT 'Error: Username already exists!' AS Message;
+        ELSE
+            INSERT INTO Accounts (Type_ID, Position_ID, Image_ID, FirstName, MiddleName, LastName, Username, Password)
+            VALUES (p_Type_ID, p_Position_ID, p_Image_ID, p_FirstName, p_MiddleName, p_LastName, p_Username, p_Password);
+            SELECT 'Account inserted successfully!' AS Message;
+        END IF;
+    END IF;
+END //
+
+-- High Spending Days Report (Weekly)
+CREATE PROCEDURE HighSpendingDays_Weekly()
+BEGIN
+    SELECT DATE(O.Date_Time) AS "Date", SUM(O.Total_Price) AS "Total Revenue"
+    FROM Ordered_Logs O
+    WHERE YEARWEEK(O.Date_Time) = YEARWEEK(CURDATE()) 
+    GROUP BY DATE(O.Date_Time)
+    ORDER BY SUM(O.Total_Price) DESC
+    LIMIT 5;
+END //
+
+-- High Spending Days Report (Monthly)
+CREATE PROCEDURE HighSpendingDays_Monthly()
+BEGIN
+    SELECT DATE(O.Date_Time) AS "Date", SUM(O.Total_Price) AS "Total Revenue"
+    FROM Ordered_Logs O
+    WHERE YEAR(O.Date_Time) = YEAR(CURDATE()) AND MONTH(O.Date_Time) = MONTH(CURDATE())
+    GROUP BY DATE(O.Date_Time)
+    ORDER BY SUM(O.Total_Price) DESC
+    LIMIT 5;
+END //
+DELIMITER ;
+
     JOIN Position_List P_L ON A.Position_ID = P_L.Position_ID
     JOIN Account_Image AI ON A.Image_ID = AI.Image_ID;  -- Joins to fetch image
 END //
