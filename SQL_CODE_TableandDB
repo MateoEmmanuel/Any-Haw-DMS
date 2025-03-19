@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS anyhaw;
+CREATE DATABASE anyhaw;
 USE anyhaw;
 
 -- Account Module --
@@ -34,31 +34,6 @@ CREATE TABLE Accounts (
     FOREIGN KEY (Position_ID) REFERENCES Position_List(Position_ID),
     FOREIGN KEY (Image_ID) REFERENCES Account_Image(Image_ID)
 );
-
--- account log part --
-CREATE TABLE Action_Type (
-    Action_Type_ID INT PRIMARY KEY Auto_Increment,
-    Typename VARCHAR(15) NOT NULL Unique
-);
-
-Create Table Affected_Table(
-Affected_Table_ID INT Primary Key Auto_Increment,
-Table_name VARCHAR(15) Not Null Unique
-);
-
-CREATE TABLE Activity_Log (
-    Log_ID INT PRIMARY KEY Auto_Increment,
-    Account_ID INT Not Null,
-    Date_Time DATETIME NOT NULL default current_timestamp,
-    Action_Type_ID INT Not Null,
-    Affected_Table_ID INT default null,
-    Affected_Row_ID INT default null,
-    Details TEXT,
-    FOREIGN KEY (Account_ID) REFERENCES Accounts(Account_ID),
-    FOREIGN KEY (Action_Type_ID) REFERENCES Action_Type(Action_Type_ID),
-    FOREIGN KEY (Affected_Table_ID) REFERENCES Affected_Table(Affected_Table_ID)
-);
-
 
 -- Menu Module --
 CREATE TABLE Image_List (
@@ -147,13 +122,14 @@ CREATE TABLE Combo_Food_Organizer (
     Combo_Food_ID INT PRIMARY KEY auto_increment,
     Item_ID INT Not Null,
     Item_Type ENUM("Food","Drink","Dessert") Not Null,
-    Combo_List_ID VARCHAR(50) Not Null
+    Combo_List_ID Int Not Null,
+    foreign key (Combo_List_ID) references Combo_Food_List(Combo_List_ID)
 );
 
 -- ordering module --
 CREATE TABLE Discount_Table (
     Discount_ID INT PRIMARY KEY AUTO_INCREMENT,
-    Discount_Name VARCHAR(255) UNIQUE NOT NULL,
+    Discount_Name VARCHAR(50) UNIQUE NOT NULL,
     Discount_Percent DECIMAL(5,2) NOT NULL
 );
 
@@ -161,12 +137,10 @@ CREATE TABLE Ordered_Logs (
     Or_Logs_ID INT PRIMARY KEY auto_increment,
     Transaction_ID VARCHAR(50) NOT NULL,
     Customer_Name VARCHAR(50) DEFAULT NULL,
-    Discount_ID INT default null,
+    Discount_Name Varchar(50) default null,
     Discount_Percent DECIMAL(10,2) default null,
     Total_Price DECIMAL(10,2) NOT NULL,
-    Date_Time DATETIME NOT NULL default Current_timestamp,
-    FOREIGN KEY (Discount_ID) REFERENCES Discount_Table(Discount_ID),
-    FOREIGN KEY (Discount_Percent) REFERENCES Discount_Table(Discount_Percent)
+    Date_Time DATETIME NOT NULL default Current_timestamp
 );
 
 CREATE TABLE Ordered_Items (
@@ -178,49 +152,19 @@ CREATE TABLE Ordered_Items (
     FOREIGN KEY (Or_Logs_ID) REFERENCES Ordered_Logs(Or_Logs_ID)
 );
 
-Create Table Database_Log(
-	Log_ID int primary key Auto_Increment,
-    Table_Name Text Not Null,
-    Table_Log_ID Int Not Null
+CREATE TABLE System_Log (
+    System_Log_ID INT AUTO_INCREMENT PRIMARY KEY,
+    Log_Type ENUM('Discount', 'Image', 'Position', 'Menu') not null,
+    Table_Name VARCHAR(255) not null, 
+    Affected_Row_ID INT not null, 
+    Action_Type ENUM('INSERT', 'UPDATE', 'DELETE') Not Null,
+    Details TEXT Not Null,
+    Date_Time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
-Create Table Image_Action_Log(
-	Image_Log_ID INT primary key Auto_Increment,
-    Affected_Data_ID int not null,
-    Action_Type ENUM("ADD","UPDATE","DELETE") NOT NULL,
-    Old_Data text not null,
-    New_Date text not null,
-    Date_Time DATETIME not null default CURRENT_TIMESTAMP,
-	Foreign Key (Affected_Data_ID) References Image_list(Image_ID)
+CREATE TABLE Activity_Log (
+    Log_ID INT AUTO_INCREMENT PRIMARY KEY,
+    Account_ID INT NOT NULL,
+    Date_Time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    Action_Type ENUM('Login', 'Logout') NOT NULL,
+    FOREIGN KEY (Account_ID) REFERENCES Accounts(Account_ID)
 );
-
-Create Table Discount_Action_Log(
-	Discount_Log_ID INT primary key Auto_Increment,
-    Affected_Data_ID int not null,
-    Action_Type ENUM("ADD","UPDATE","DELETE") NOT NULL,
-    Old_Data text not null,
-    New_Date text not null,
-    Date_Time DATETIME not null default CURRENT_TIMESTAMP,
-    Foreign Key (Affected_Data_ID) References Discount_Table(Discount_ID)
-);
-
-Create Table Position_Action_Log(
-	Position_Log_ID INT primary key Auto_Increment,
-    Affected_Data_ID int not null,
-    Action_Type ENUM("ADD","UPDATE","DELETE") NOT NULL,
-    Old_Data text not null,
-    New_Date text not null,
-    Date_Time DATETIME not null default CURRENT_TIMESTAMP,
-    Foreign Key (Affected_Data_ID) References Positon_List(Position_ID)
-);
-
-Create Table Menu_Action_Log(
-	Menu_Log_ID INT primary key Auto_Increment,
-    Affected_Table_Name text not null,
-    Affected_Data_ID int not null,
-    Action_Type ENUM("ADD","UPDATE","DELETE") NOT NULL,
-    Old_Data text not null,
-    New_Date text not null,
-    Date_Time DATETIME not null default CURRENT_TIMESTAMP
-);
-
