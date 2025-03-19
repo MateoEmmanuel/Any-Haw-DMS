@@ -1,0 +1,162 @@
+DELIMITER //
+CREATE PROCEDURE GetAccountByUsername(IN p_Username VARCHAR(255))
+BEGIN
+    SELECT 
+        A.Account_ID,
+        fullname(A.FirstName, A.MiddleName, A.LastName) AS "Fullname", 
+        A.Username, 
+        P_L.Position_name AS "Position",
+        AI.Image AS "Profile_Image"
+    FROM Accounts A
+    JOIN Position_List P_L ON A.Position_ID = P_L.Position_ID
+    LEFT JOIN Account_Image AI ON A.Image_ID = AI.Image_ID
+    WHERE A.Username = p_Username;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE UpdateAccount(
+    IN p_AccountID INT,
+    IN p_FirstName VARCHAR(255),
+    IN p_MiddleName VARCHAR(255),
+    IN p_LastName VARCHAR(255),
+    IN p_PositionName VARCHAR(100)
+)
+BEGIN
+    DECLARE p_Position_ID INT;
+
+    -- Get Position_ID from Position Name
+    SELECT Position_ID INTO p_Position_ID 
+    FROM Position_List 
+    WHERE Position_name = p_PositionName 
+    LIMIT 1;
+
+    -- Update Account
+    UPDATE Accounts
+    SET FirstName = p_FirstName,
+        MiddleName = p_MiddleName,
+        LastName = p_LastName,
+        Position_ID = p_Position_ID
+    WHERE Account_ID = p_AccountID;
+
+    SELECT 'Account updated successfully!' AS Message;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE DeleteAccount(IN p_AccountID INT)
+BEGIN
+    UPDATE Accounts
+    SET Is_Active = 0  -- Assuming there's an `Is_Active` column (1 = Active, 0 = Inactive)
+    WHERE Account_ID = p_AccountID;
+
+    SELECT 'Account successfully deactivated!' AS Message;
+END //
+DELIMITER ;
+
+
+DELIMITER //
+CREATE PROCEDURE GetProductsByCategory(IN p_CategoryName VARCHAR(255), IN p_ProductType ENUM('Food', 'Drink', 'Dessert', 'Combo'))
+BEGIN
+    IF p_ProductType = 'Food' THEN
+        SELECT FL.Food_ID, FL.Food_Name, NFL.Price, NFL.Code_Name
+        FROM Food_List FL
+        JOIN Normal_Food_List NFL ON FL.Food_ID = NFL.Food_ID
+        JOIN Food_Category FC ON NFL.F_Category_ID = FC.F_Category_ID
+        WHERE FC.Category_Name = p_CategoryName;
+
+    ELSEIF p_ProductType = 'Drink' THEN
+        SELECT DL.Drink_ID, DL.Drink_Name, DL.Price, DL.Code_Name
+        FROM Drink_List DL
+        JOIN Drink_Category DC ON DL.Dr_Category_ID = DC.Dr_Category_ID
+        WHERE DC.Category_Name = p_CategoryName;
+
+    ELSEIF p_ProductType = 'Dessert' THEN
+        SELECT DSL.Dessert_ID, DSL.Dessert_Name, DSL.Price, DSL.Code_Name
+        FROM Dessert_List DSL
+        JOIN Dessert_Category DC ON DSL.De_Category_ID = DC.De_Category_ID
+        WHERE DC.Category_Name = p_CategoryName;
+
+    ELSEIF p_ProductType = 'Combo' THEN
+        SELECT CFL.Combo_List_ID, CFL.Code_Name, CFD.Price
+        FROM Combo_Food_List CFL
+        JOIN Combo_Food_Details CFD ON CFL.C_Details_ID = CFD.C_Details_ID
+        JOIN Combo_Category CC ON CFL.C_Category_ID = CC.C_Category_ID
+        WHERE CC.Category_Name = p_CategoryName;
+    END IF;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE UpdateProductPrice(
+    IN p_ProductType ENUM('Food', 'Drink', 'Dessert', 'Combo'),
+    IN p_ProductID INT,
+    IN p_NewPrice DECIMAL(10,2)
+)
+BEGIN
+    IF p_ProductType = 'Food' THEN
+        UPDATE Normal_Food_List SET Price = p_NewPrice WHERE N_List_ID = p_ProductID;
+    ELSEIF p_ProductType = 'Drink' THEN
+        UPDATE Drink_List SET Price = p_NewPrice WHERE Drink_ID = p_ProductID;
+    ELSEIF p_ProductType = 'Dessert' THEN
+        UPDATE Dessert_List SET Price = p_NewPrice WHERE Dessert_ID = p_ProductID;
+    ELSEIF p_ProductType = 'Combo' THEN
+        UPDATE Combo_Food_Details SET Price = p_NewPrice WHERE C_Details_ID = p_ProductID;
+    END IF;
+
+    SELECT 'Price updated successfully!' AS Message;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE DeleteProduct(
+    IN p_ProductType ENUM('Food', 'Drink', 'Dessert', 'Combo'),
+    IN p_ProductID INT
+)
+BEGIN
+    IF p_ProductType = 'Food' THEN
+        UPDATE Normal_Food_List SET Is_Active = 0 WHERE N_List_ID = p_ProductID;
+    ELSEIF p_ProductType = 'Drink' THEN
+        UPDATE Drink_List SET Is_Active = 0 WHERE Drink_ID = p_ProductID;
+    ELSEIF p_ProductType = 'Dessert' THEN
+        UPDATE Dessert_List SET Is_Active = 0 WHERE Dessert_ID = p_ProductID;
+    ELSEIF p_ProductType = 'Combo' THEN
+        UPDATE Combo_Food_Details SET Is_Active = 0 WHERE C_Details_ID = p_ProductID;
+    END IF;
+
+    SELECT 'Product removed successfully!' AS Message;
+END //
+DELIMITER ;
+
+
+DELIMITER //
+CREATE PROCEDURE GetOrdersByDateRange(IN startDate DATE, IN endDate DATE)
+BEGIN
+    SELECT Or_Logs_ID, Account_ID, Date_Time, Total_Price
+    FROM Ordered_Logs
+    WHERE DATE(Date_Time) BETWEEN startDate AND endDate;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE GetOrderDetails(IN p_OrderID INT)
+BEGIN
+    SELECT 
+        OI.Item_ID, 
+        CASE 
+            WHEN OI.Item_Type = 'Food' THEN FL.Food_Name
+            WHEN OI.Item_Type = 'Drink' THEN DL.Drink_Name
+            WHEN OI.Item_Type = 'Dessert' THEN DSL.Dessert_Name
+            WHEN OI.Item_Type = 'Combo' THEN CFL.Code_Name
+        END AS Item_Name,
+        OI.Quantity, 
+        OI.Price
+    FROM Ordered_Items OI
+    LEFT JOIN Normal_Food_List NFL ON OI.Item_ID = NFL.N_List_ID
+    LEFT JOIN Food_List FL ON NFL.Food_ID = FL.Food_ID
+    LEFT JOIN Drink_List DL ON OI.Item_ID = DL.Drink_ID
+    LEFT JOIN Dessert_List DSL ON OI.Item_ID = DSL.Dessert_ID
+    LEFT JOIN Combo_Food_List CFL ON OI.Item_ID = CFL.Combo_List_ID
+    WHERE OI.Or_Logs_ID = p_OrderID;
+END //
+DELIMITER ;
