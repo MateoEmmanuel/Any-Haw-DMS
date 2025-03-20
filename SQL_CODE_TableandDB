@@ -25,14 +25,14 @@ CREATE TABLE Accounts (
     Type_ID INT Not Null,
     Position_ID INT Not Null,
     Image_ID INT not Null,
-    FirstName VARCHAR(255) NOT NULL,
-    MiddleName VARCHAR(255),
-    LastName VARCHAR(255) NOT NULL,
-    Username VARCHAR(255) NOT NULL UNIQUE,
-    Password VARCHAR(255) NOT NULL,
-    FOREIGN KEY (Type_ID) REFERENCES Account_Type(Type_ID),
-    FOREIGN KEY (Position_ID) REFERENCES Position_List(Position_ID),
-    FOREIGN KEY (Image_ID) REFERENCES Account_Image(Image_ID)
+    FirstName VARCHAR(100) NOT NULL,
+    MiddleName VARCHAR(100) Default Null,
+    LastName VARCHAR(100) NOT NULL,
+    Username VARCHAR(100) NOT NULL UNIQUE,
+    Password VARCHAR(100) NOT NULL,
+    FOREIGN KEY (Type_ID) REFERENCES Account_Type(Type_ID) ON DELETE RESTRICT, 
+    FOREIGN KEY (Position_ID) REFERENCES Position_List(Position_ID) ON DELETE RESTRICT,
+    FOREIGN KEY (Image_ID) REFERENCES Account_Image(Image_ID) ON DELETE RESTRICT
 );
 
 -- Menu Module --
@@ -48,7 +48,8 @@ CREATE TABLE Food_Category (
 
 CREATE TABLE Food_List (
     Food_ID INT PRIMARY KEY AUTO_INCREMENT,
-    Food_Name VARCHAR(100) NOT NULL
+    Food_Name VARCHAR(100) NOT NULL,
+    Availability TINYINT(1) not null
 );
 
 CREATE TABLE Normal_Food_List (
@@ -56,17 +57,18 @@ CREATE TABLE Normal_Food_List (
     Food_ID INT Not Null Unique,
     F_Category_ID INT Not Null,
     Image_ID INT Not Null Unique,
-    Description Varchar(50) Default Null,
+    Description TEXT Default Null,
     Price DECIMAL(10,2) NOT NULL,
     Code_Name VARCHAR(50) Not Null Unique,
-    FOREIGN KEY (Food_ID) REFERENCES Food_List(Food_ID),
-    FOREIGN KEY (F_Category_ID) REFERENCES Food_Category(F_Category_ID),
-    FOREIGN KEY (Image_ID) REFERENCES Image_List(Image_ID)
+    FOREIGN KEY (Food_ID) REFERENCES Food_List(Food_ID) ON DELETE RESTRICT,
+    FOREIGN KEY (F_Category_ID) REFERENCES Food_Category(F_Category_ID) ON DELETE RESTRICT,
+    FOREIGN KEY (Image_ID) REFERENCES Image_List(Image_ID) ON DELETE RESTRICT
 );
 
 CREATE TABLE Drink_Category (
     Dr_Category_ID INT PRIMARY KEY auto_increment,
-    Category_Name VARCHAR(100) NOT NULL Unique
+    Category_Name VARCHAR(100) NOT NULL Unique,
+    Availability TINYINT(1) not null
 );
 
 CREATE TABLE Drink_List (
@@ -76,13 +78,14 @@ CREATE TABLE Drink_List (
     Drink_Name VARCHAR(150) NOT NULL,
     Code_Name VARCHAR(25) Not null unique,
     Price DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (Dr_Category_ID) REFERENCES Drink_Category(Dr_Category_ID),
-    FOREIGN KEY (Image_ID) REFERENCES Image_List(Image_ID)
+    FOREIGN KEY (Dr_Category_ID) REFERENCES Drink_Category(Dr_Category_ID) ON DELETE RESTRICT,
+    FOREIGN KEY (Image_ID) REFERENCES Image_List(Image_ID) ON DELETE RESTRICT
 );
 
 CREATE TABLE Dessert_Category (
     De_Category_ID INT PRIMARY KEY auto_increment,
-    Category_Name VARCHAR(100) NOT NULL unique
+    Category_Name VARCHAR(100) NOT NULL unique,
+    Availability TINYINT(1) not null
 );
 
 CREATE TABLE Dessert_List (
@@ -92,8 +95,8 @@ CREATE TABLE Dessert_List (
     Dessert_Name VARCHAR(100) NOT NULL,
     Code_Name VARCHAR(50) Not Null unique,
     Price DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (De_Category_ID) REFERENCES Dessert_Category(De_Category_ID),
-    FOREIGN KEY (Image_ID) REFERENCES Image_List(Image_ID)
+    FOREIGN KEY (De_Category_ID) REFERENCES Dessert_Category(De_Category_ID) ON DELETE RESTRICT,
+    FOREIGN KEY (Image_ID) REFERENCES Image_List(Image_ID) ON DELETE RESTRICT
 );
 
 CREATE TABLE Combo_Category (
@@ -106,7 +109,7 @@ CREATE TABLE Combo_Food_Details (
     Image_ID INT Not Null Unique,
     Description TEXT Not Null,
     Price Decimal(10,2) Not Null,
-    FOREIGN KEY (Image_ID) REFERENCES Image_List(Image_ID)
+    FOREIGN KEY (Image_ID) REFERENCES Image_List(Image_ID) ON DELETE RESTRICT
 );
 
 CREATE TABLE Combo_Food_List (
@@ -114,8 +117,8 @@ CREATE TABLE Combo_Food_List (
     C_Category_ID INT Not Null,
     C_Details_ID INT Not Null,
     Code_Name VARCHAR(50) Not Null Unique,
-    FOREIGN KEY (C_Category_ID) REFERENCES Combo_Category(C_Category_ID),
-    FOREIGN KEY (C_Details_ID) REFERENCES Combo_Food_Details(C_Details_ID)
+    FOREIGN KEY (C_Category_ID) REFERENCES Combo_Category(C_Category_ID) ON DELETE RESTRICT,
+    FOREIGN KEY (C_Details_ID) REFERENCES Combo_Food_Details(C_Details_ID) ON DELETE RESTRICT
 );
 
 CREATE TABLE Combo_Food_Organizer (
@@ -123,7 +126,7 @@ CREATE TABLE Combo_Food_Organizer (
     Item_ID INT Not Null,
     Item_Type ENUM("Food","Drink","Dessert") Not Null,
     Combo_List_ID Int Not Null,
-    foreign key (Combo_List_ID) references Combo_Food_List(Combo_List_ID)
+    foreign key (Combo_List_ID) references Combo_Food_List(Combo_List_ID) ON DELETE RESTRICT
 );
 
 -- ordering module --
@@ -135,7 +138,7 @@ CREATE TABLE Discount_Table (
 
 CREATE TABLE Ordered_Logs (
     Or_Logs_ID INT PRIMARY KEY auto_increment,
-    Transaction_ID VARCHAR(50) NOT NULL,
+    Transaction_ID VARCHAR(25) NOT NULL,
     Customer_Name VARCHAR(50) DEFAULT NULL,
     Discount_Name Varchar(50) default null,
     Discount_Percent DECIMAL(10,2) default null,
@@ -149,13 +152,13 @@ CREATE TABLE Ordered_Items (
     Item_ID INT NOT NULL,
     Item_Type ENUM('Food','Combo','Dessert','Drink') NOT NULL,
     Quantity INT NOT NULL,
-    FOREIGN KEY (Or_Logs_ID) REFERENCES Ordered_Logs(Or_Logs_ID)
+    FOREIGN KEY (Or_Logs_ID) REFERENCES Ordered_Logs(Or_Logs_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE System_Log (
     System_Log_ID INT AUTO_INCREMENT PRIMARY KEY,
     Log_Type ENUM('Discount', 'Image', 'Position', 'Menu') not null,
-    Table_Name VARCHAR(255) not null, 
+    Table_Name VARCHAR(100) not null, 
     Affected_Row_ID INT not null, 
     Action_Type ENUM('INSERT', 'UPDATE', 'DELETE') Not Null,
     Details TEXT Not Null,
@@ -163,8 +166,9 @@ CREATE TABLE System_Log (
 );
 CREATE TABLE Activity_Log (
     Log_ID INT AUTO_INCREMENT PRIMARY KEY,
-    Account_ID INT NOT NULL,
+    Account_ID INT,
+    Fullname VARCHAR(255) NOT NULL,
     Date_Time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    Action_Type ENUM('Login', 'Logout') NOT NULL,
-    FOREIGN KEY (Account_ID) REFERENCES Accounts(Account_ID)
+    Action_Type ENUM('Login', 'Logout') NOT NULL, 
+    FOREIGN KEY (Account_ID) REFERENCES Accounts(Account_ID) ON DELETE SET NULL
 );
