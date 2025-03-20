@@ -6,7 +6,7 @@ CREATE FUNCTION fullname(
     LastName VARCHAR(255)
 ) RETURNS VARCHAR(255) DETERMINISTIC
 BEGIN
-    RETURN TRIM(CONCAT(FirstName, ' ', COALESCE(MiddleName, ''), ' ', LastName));
+    RETURN TRIM(CONCAT(FirstName, ' ', IFNULL(CONCAT(MiddleName, ' '), ''), LastName));
 END //
 
 -- Staff Account List Report
@@ -30,7 +30,7 @@ BEGIN
         A_L.Date_Time AS "Date & Time", 
         A_L.Action_Type AS "Activity Type"
     FROM Activity_Log A_L
-    JOIN Accounts A ON A_L.Account_ID = A.Account_ID;
+    LEFT JOIN Accounts A ON A_L.Account_ID = A.Account_ID;
 END //
 
 -- Top Best Sellers
@@ -39,7 +39,7 @@ BEGIN
     SELECT * FROM (
         SELECT OI.Item_ID, FL.Food_Name AS "Item Name", 'Food' AS "Category", SUM(OI.Quantity) AS "Total Sold"
         FROM Ordered_Items OI
-        JOIN Normal_Food_List NFL ON OI.Item_ID = NFL.N_List_ID
+        JOIN Normal_Food_List NFL ON OI.Item_ID = NFL.Food_ID
         JOIN Food_List FL ON NFL.Food_ID = FL.Food_ID
         JOIN Ordered_Logs OL ON OI.Or_Logs_ID = OL.Or_Logs_ID
         WHERE OI.Item_Type = 'Food' AND OL.Date_Time BETWEEN startDate AND endDate
@@ -118,7 +118,7 @@ BEGIN
             INSERT INTO Account_Image (Image) VALUES (p_Image);
             SET p_Image_ID = LAST_INSERT_ID();
         ELSE
-            SET p_Image_ID = NULL;
+            INSERT INTO Account_Image (Image) VALUES ("None");
         END IF;
 
         SELECT COUNT(*) INTO p_UsernameExists FROM Accounts WHERE Username = p_Username;
