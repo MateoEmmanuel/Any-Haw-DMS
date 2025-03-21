@@ -9,6 +9,28 @@ BEGIN
     RETURN TRIM(CONCAT(FirstName, ' ', IFNULL(CONCAT(MiddleName, ' '), ''), LastName));
 END //
 
+CREATE PROCEDURE InsertAccountType(
+    IN p_Type_Name VARCHAR(15)
+)
+BEGIN
+    INSERT INTO Account_Type (Type_name) 
+    VALUES (p_Type_Name);
+
+    SELECT 'Account type inserted successfully!' AS Message;
+END //
+
+CREATE PROCEDURE InsertPosition(
+    IN p_Position_Name VARCHAR(100),
+    IN p_Salary DECIMAL(10,2)
+)
+BEGIN
+    INSERT INTO Position_List (Position_name, Salary) 
+    VALUES (p_Position_Name, p_Salary);
+
+    SELECT 'Position inserted successfully!' AS Message;
+END //
+
+
 -- Insert Account Procedure
 CREATE PROCEDURE InsertAccount(    
     IN p_Type_ID INT,
@@ -134,5 +156,111 @@ BEGIN
 
             SELECT 'Username and password updated successfully!' AS Message;
         END IF;
+    END IF;
+END //
+
+CREATE PROCEDURE UpdateAccountType(
+    IN p_Type_ID INT,
+    IN p_New_Type_Name VARCHAR(15)
+)
+BEGIN
+    DECLARE p_TypeExists INT;
+
+    -- Check if the account type exists
+    SELECT COUNT(*) INTO p_TypeExists FROM Account_Type WHERE Type_ID = p_Type_ID;
+
+    IF p_TypeExists = 0 THEN
+        SELECT 'Error: Account type not found!' AS Message;
+    ELSE
+        UPDATE Account_Type 
+        SET Type_name = p_New_Type_Name
+        WHERE Type_ID = p_Type_ID;
+
+        SELECT 'Account type updated successfully!' AS Message;
+    END IF;
+END //
+
+CREATE PROCEDURE UpdatePosition(
+    IN p_Position_ID INT,
+    IN p_New_Position_Name VARCHAR(100),
+    IN p_New_Salary DECIMAL(10,2)
+)
+BEGIN
+    DECLARE p_PositionExists INT;
+
+    -- Check if the position exists
+    SELECT COUNT(*) INTO p_PositionExists FROM Position_List WHERE Position_ID = p_Position_ID;
+
+    IF p_PositionExists = 0 THEN
+        SELECT 'Error: Position not found!' AS Message;
+    ELSE
+        UPDATE Position_List 
+        SET 
+            Position_name = p_New_Position_Name,
+            Salary = p_New_Salary
+        WHERE Position_ID = p_Position_ID;
+
+        SELECT 'Position updated successfully!' AS Message;
+    END IF;
+END //
+ 
+ 
+ -- DELETE --
+ CREATE PROCEDURE DeleteAccountType(
+    IN p_Type_ID INT
+)
+BEGIN
+    DECLARE p_ReferenceExists INT;
+
+    -- Check if the Type_ID is referenced in Accounts
+    SELECT COUNT(*) INTO p_ReferenceExists FROM Accounts WHERE Type_ID = p_Type_ID;
+
+    IF p_ReferenceExists > 0 THEN
+        SELECT 'Error: Cannot delete account type, it is referenced in accounts!' AS Message;
+    ELSE
+        DELETE FROM Account_Type WHERE Type_ID = p_Type_ID;
+        SELECT 'Account type deleted successfully!' AS Message;
+    END IF;
+END //
+
+CREATE PROCEDURE DeletePosition(
+    IN p_Position_ID INT
+)
+BEGIN
+    DECLARE p_ReferenceExists INT;
+
+    -- Check if the Position_ID is referenced in Accounts
+    SELECT COUNT(*) INTO p_ReferenceExists FROM Accounts WHERE Position_ID = p_Position_ID;
+
+    IF p_ReferenceExists > 0 THEN
+        SELECT 'Error: Cannot delete position, it is referenced in accounts!' AS Message;
+    ELSE
+        DELETE FROM Position_List WHERE Position_ID = p_Position_ID;
+        SELECT 'Position deleted successfully!' AS Message;
+    END IF;
+END //
+
+CREATE PROCEDURE DeleteAccount(
+    IN p_Username VARCHAR(255)
+)
+BEGIN
+    DECLARE p_Account_ID INT;
+    DECLARE p_Image_ID INT;
+
+    -- Get Account_ID and Image_ID
+    SELECT Account_ID, Image_ID INTO p_Account_ID, p_Image_ID 
+    FROM Accounts WHERE Username = p_Username LIMIT 1;
+
+    -- Check if the account exists
+    IF p_Account_ID IS NULL THEN
+        SELECT 'Error: Account not found!' AS Message;
+    ELSE
+        -- Delete the account
+        DELETE FROM Accounts WHERE Account_ID = p_Account_ID;
+
+        -- Delete the image associated with the account
+        DELETE FROM Account_Image WHERE Image_ID = p_Image_ID;
+
+        SELECT 'Account deleted successfully!' AS Message;
     END IF;
 END //
