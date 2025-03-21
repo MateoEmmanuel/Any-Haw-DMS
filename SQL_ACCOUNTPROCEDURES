@@ -1,0 +1,138 @@
+-- Function for Full Name
+DELIMITER //
+CREATE FUNCTION fullname(
+    FirstName VARCHAR(255),
+    MiddleName VARCHAR(255),
+    LastName VARCHAR(255)
+) RETURNS VARCHAR(255) DETERMINISTIC
+BEGIN
+    RETURN TRIM(CONCAT(FirstName, ' ', IFNULL(CONCAT(MiddleName, ' '), ''), LastName));
+END //
+
+-- Insert Account Procedure
+CREATE PROCEDURE InsertAccount(    
+    IN p_Type_ID INT,
+    IN p_Position_Name VARCHAR(100),
+    IN p_Image LONGBLOB,
+    IN p_FirstName VARCHAR(255),
+    IN p_MiddleName VARCHAR(255),
+    IN p_LastName VARCHAR(255),
+    IN p_Username VARCHAR(255),
+    IN p_Password VARCHAR(255)
+)
+BEGIN
+    DECLARE p_Position_ID INT;  
+    DECLARE p_Image_ID INT;
+    DECLARE p_UsernameExists INT;
+
+    SELECT Position_ID INTO p_Position_ID FROM Position_List WHERE Position_name = p_Position_Name LIMIT 1;
+
+    IF p_Position_ID IS NULL THEN
+        SELECT 'Error: Position does not exist!' AS Message;
+    ELSE
+        IF p_Image IS NOT NULL THEN
+            INSERT INTO Account_Image (Image) VALUES (p_Image);
+            SET p_Image_ID = LAST_INSERT_ID();
+        ELSE
+            INSERT INTO Account_Image (Image) VALUES ("None");
+        END IF;
+
+        SELECT COUNT(*) INTO p_UsernameExists FROM Accounts WHERE Username = p_Username;
+
+        IF p_UsernameExists > 0 THEN
+            SELECT 'Error: Username already exists!' AS Message;
+        ELSE
+            INSERT INTO Accounts (Type_ID, Position_ID, Image_ID, FirstName, MiddleName, LastName, Username, Password)
+            VALUES (p_Type_ID, p_Position_ID, p_Image_ID, p_FirstName, p_MiddleName, p_LastName, p_Username, p_Password);
+            SELECT 'Account inserted successfully!' AS Message;
+        END IF;
+    END IF;
+END //
+
+CREATE PROCEDURE UpdateAccountInfo(
+    IN p_Username VARCHAR(255),
+    IN p_Type_ID INT,
+    IN p_Position_Name VARCHAR(100),
+    IN p_Image LONGBLOB,
+    IN p_FirstName VARCHAR(255),
+    IN p_MiddleName VARCHAR(255),
+    IN p_LastName VARCHAR(255)
+)
+BEGIN
+    DECLARE p_Account_ID INT;
+    DECLARE p_Position_ID INT;
+    DECLARE p_Image_ID INT;
+
+    -- Get Account_ID and Image_ID
+    SELECT Account_ID, Image_ID INTO p_Account_ID, p_Image_ID 
+    FROM Accounts 
+    WHERE Username = p_Username 
+    LIMIT 1;
+
+    -- Check if the account exists
+    IF p_Account_ID IS NULL THEN
+        SELECT 'Error: Username not found!' AS Message;
+    ELSE
+        -- Get Position_ID based on Position Name
+        SELECT Position_ID INTO p_Position_ID FROM Position_List 
+        WHERE Position_name = p_Position_Name LIMIT 1;
+
+        IF p_Position_ID IS NULL THEN
+            SELECT 'Error: Position does not exist!' AS Message;
+        ELSE
+            -- If a new image is provided, update the existing image
+            IF p_Image IS NOT NULL THEN
+                UPDATE Account_Image 
+                SET Image = p_Image 
+                WHERE Image_ID = p_Image_ID;
+            END IF;
+
+            -- Update Account Information (Excluding Username & Password)
+            UPDATE Accounts 
+            SET 
+                Type_ID = p_Type_ID,
+                Position_ID = p_Position_ID,
+                FirstName = p_FirstName,
+                MiddleName = p_MiddleName,
+                LastName = p_LastName
+            WHERE Account_ID = p_Account_ID;
+
+            SELECT 'Account information updated successfully!' AS Message;
+        END IF;
+    END IF;
+END //
+
+CREATE PROCEDURE UpdateAccount(
+    IN p_Username VARCHAR(255),
+    IN p_NewUsername VARCHAR(255),
+    IN p_NewPassword VARCHAR(255)
+)
+BEGIN
+    DECLARE p_Account_ID INT;
+    DECLARE p_UsernameExists INT;
+
+    -- Get Account_ID using the old Username
+    SELECT Account_ID INTO p_Account_ID FROM Accounts WHERE Username = p_Username LIMIT 1;
+
+    -- Check if the account exists
+    IF p_Account_ID IS NULL THEN
+        SELECT 'Error: Username not found!' AS Message;
+    ELSE
+        -- Check if the new username already exists (excluding the current account)
+        SELECT COUNT(*) INTO p_UsernameExists FROM Accounts 
+        WHERE Username = p_NewUsername AND Account_ID <> p_Account_ID;
+
+        IF p_UsernameExists > 0 THEN
+            SELECT 'Error: New username already exists!' AS Message;
+        ELSE
+            -- Update only the Username and Password
+            UPDATE Accounts 
+            SET 
+                Username = p_NewUsername,
+                Password = p_NewPassword
+            WHERE Account_ID = p_Account_ID;
+
+            SELECT 'Username and password updated successfully!' AS Message;
+        END IF;
+    END IF;
+END //
