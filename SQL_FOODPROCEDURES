@@ -1,4 +1,164 @@
 DELIMITER //
+-- Insert --
+CREATE PROCEDURE InsertFood(
+    IN p_Food_Name VARCHAR(100),
+    IN p_Availability TINYINT(1)
+)
+BEGIN
+    INSERT INTO Food_List (Food_Name, Availability)
+    VALUES (p_Food_Name, p_Availability);
+
+    SELECT 'Food inserted successfully!' AS Message;
+END //
+
+CREATE PROCEDURE InsertFoodCategory(
+    IN p_Category_Name VARCHAR(100)
+)
+BEGIN
+    INSERT INTO Food_Category (Category_Name) 
+    VALUES (p_Category_Name);
+
+    SELECT 'Food category inserted successfully!' AS Message;
+END //
+
+CREATE PROCEDURE InsertNormalFood(
+    IN p_Food_ID INT,
+    IN p_F_Category_ID INT,
+    IN p_Image LONGBLOB,
+    IN p_Description TEXT,
+    IN p_Price DECIMAL(10,2),
+    IN p_Code_Name VARCHAR(50)
+)
+BEGIN
+    DECLARE p_Image_ID INT;
+
+    -- Insert the image and get its ID
+    INSERT INTO Image_List (Image) VALUES (p_Image);
+    SET p_Image_ID = LAST_INSERT_ID();
+
+    -- Insert into Normal_Food_List
+    INSERT INTO Normal_Food_List (Food_ID, F_Category_ID, Image_ID, Description, Price, Code_Name)
+    VALUES (p_Food_ID, p_F_Category_ID, p_Image_ID, p_Description, p_Price, p_Code_Name);
+
+    SELECT 'Normal food inserted successfully!' AS Message;
+END //
+
+CREATE PROCEDURE InsertDrink(
+    IN p_Dr_Category_ID INT,
+    IN p_Image LONGBLOB,
+    IN p_Drink_Name VARCHAR(150),
+    IN p_Code_Name VARCHAR(25),
+    IN p_Price DECIMAL(10,2)
+)
+BEGIN
+    DECLARE p_Image_ID INT;
+
+    -- Insert the image and get its ID
+    INSERT INTO Image_List (Image) VALUES (p_Image);
+    SET p_Image_ID = LAST_INSERT_ID();
+
+    -- Insert into Drink_List
+    INSERT INTO Drink_List (Dr_Category_ID, Image_ID, Drink_Name, Code_Name, Price)
+    VALUES (p_Dr_Category_ID, p_Image_ID, p_Drink_Name, p_Code_Name, p_Price);
+
+    SELECT 'Drink inserted successfully!' AS Message;
+END //
+
+CREATE PROCEDURE InsertDrinkCategory(
+    IN p_Category_Name VARCHAR(100),
+    IN p_Availability TINYINT(1)
+)
+BEGIN
+    INSERT INTO Drink_Category (Category_Name, Availability) 
+    VALUES (p_Category_Name, p_Availability);
+
+    SELECT 'Drink category inserted successfully!' AS Message;
+END //
+
+
+CREATE PROCEDURE InsertDessert(
+    IN p_De_Category_ID INT,
+    IN p_Image LONGBLOB,
+    IN p_Dessert_Name VARCHAR(100),
+    IN p_Code_Name VARCHAR(50),
+    IN p_Price DECIMAL(10,2)
+)
+BEGIN
+    DECLARE p_Image_ID INT;
+
+    -- Insert the image and get its ID
+    INSERT INTO Image_List (Image) VALUES (p_Image);
+    SET p_Image_ID = LAST_INSERT_ID();
+
+    -- Insert into Dessert_List
+    INSERT INTO Dessert_List (De_Category_ID, Image_ID, Dessert_Name, Code_Name, Price)
+    VALUES (p_De_Category_ID, p_Image_ID, p_Dessert_Name, p_Code_Name, p_Price);
+
+    SELECT 'Dessert inserted successfully!' AS Message;
+END //
+
+CREATE PROCEDURE InsertDessertCategory(
+    IN p_Category_Name VARCHAR(100),
+    IN p_Availability TINYINT(1)
+)
+BEGIN
+    INSERT INTO Dessert_Category (Category_Name, Availability) 
+    VALUES (p_Category_Name, p_Availability);
+
+    SELECT 'Dessert category inserted successfully!' AS Message;
+END //
+
+CREATE PROCEDURE InsertComboCategory(
+    IN p_Category_Name VARCHAR(100)
+)
+BEGIN
+    INSERT INTO Combo_Category (Category_Name) 
+    VALUES (p_Category_Name);
+
+    SELECT 'Combo category inserted successfully!' AS Message;
+END //
+
+CREATE PROCEDURE InsertComboDetails(
+    IN p_Image_ID INT,
+    IN p_Description TEXT,
+    IN p_Price DECIMAL(10,2)
+)
+BEGIN
+    INSERT INTO Combo_Food_Details (Image_ID, Description, Price) 
+    VALUES (p_Image_ID, p_Description, p_Price);
+    
+    SELECT LAST_INSERT_ID() AS C_Details_ID, 'Combo details inserted successfully!' AS Message;
+END //
+
+CREATE PROCEDURE InsertComboFoodList(
+    IN p_C_Category_ID INT,
+    IN p_C_Details_ID INT,
+    IN p_Code_Name VARCHAR(50)
+)
+BEGIN
+    INSERT INTO Combo_Food_List (C_Category_ID, C_Details_ID, Code_Name) 
+    VALUES (p_C_Category_ID, p_C_Details_ID, p_Code_Name);
+    
+    SELECT LAST_INSERT_ID() AS Combo_List_ID, 'Combo food list inserted successfully!' AS Message;
+END //
+
+CREATE PROCEDURE InsertComboFoodOrganizer(
+    IN p_Item_ID INT,
+    IN p_Item_Type ENUM("Food","Drink","Dessert"),
+    IN p_Combo_List_ID INT
+)
+BEGIN
+    INSERT INTO Combo_Food_Organizer (Item_ID, Item_Type, Combo_List_ID) 
+    VALUES (p_Item_ID, p_Item_Type, p_Combo_List_ID);
+    
+    SELECT 'Item added to combo successfully!' AS Message;
+END //
+
+
+
+
+
+-- Updates --
 CREATE PROCEDURE UpdateAvailability(
     IN p_ItemType ENUM('N_Food', 'Combo', 'Drink','Dessert'),
     IN p_ItemID INT,
@@ -93,3 +253,7 @@ BEGIN
         SELECT 'Error: Image not found for the given item!' AS Message;
     END IF;
 END //
+
+
+
+
