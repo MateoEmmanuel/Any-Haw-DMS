@@ -268,6 +268,239 @@ END //
 
 -- triggers --
 
+CREATE TRIGGER InsertLog_AccountType
+AFTER INSERT ON Account_Type
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'INSERT', 
+        'Account_Type', 
+        NEW.Type_ID, 
+        'N/A', 
+        NEW.Type_name, 
+        CONCAT(
+            'Inserted new account type: Type_ID=', NEW.Type_ID, 
+            ', Type_Name="', NEW.Type_name, '"',
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER UpdateLog_AccountType
+AFTER UPDATE ON Account_Type
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'UPDATE', 
+        'Account_Type', 
+        OLD.Type_ID, 
+        OLD.Type_name, 
+        NEW.Type_name, 
+        CONCAT(
+            'Updated account type: Type_ID=', OLD.Type_ID, 
+            ', Type_Name from "', OLD.Type_name, '" to "', NEW.Type_name, '"',
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER DeleteLog_AccountType
+AFTER DELETE ON Account_Type
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'DELETE', 
+        'Account_Type', 
+        OLD.Type_ID, 
+        OLD.Type_name, 
+        'N/A', 
+        CONCAT(
+            'Deleted account type: Type_ID=', OLD.Type_ID, 
+            ', Type_Name="', OLD.Type_name, '"',
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER InsertLog_Position
+AFTER INSERT ON Position_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'INSERT', 
+        'Position_List', 
+        NEW.Position_ID, 
+        'N/A', 
+        NEW.Position_name, 
+        CONCAT(
+            'Inserted new position: Position_ID=', NEW.Position_ID, 
+            ', Position_Name="', NEW.Position_name, '"', 
+            ', Salary=', NEW.Salary,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER UpdateLog_Position
+AFTER UPDATE ON Position_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'UPDATE', 
+        'Position_List', 
+        OLD.Position_ID, 
+        OLD.Position_name, 
+        NEW.Position_name, 
+        CONCAT(
+            'Updated position: Position_ID=', OLD.Position_ID, 
+            ', Position_Name from "', OLD.Position_name, '" to "', NEW.Position_name, '"', 
+            ', Salary from ', OLD.Salary, ' to ', NEW.Salary,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER DeleteLog_Position
+AFTER DELETE ON Position_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'DELETE', 
+        'Position_List', 
+        OLD.Position_ID, 
+        OLD.Position_name, 
+        'N/A', 
+        CONCAT(
+            'Deleted position: Position_ID=', OLD.Position_ID, 
+            ', Position_Name="', OLD.Position_name, '"', 
+            ', Salary=', OLD.Salary,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER InsertLog_AccountImage
+AFTER INSERT ON Account_Image
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'INSERT', 
+        'Account_Image', 
+        NEW.Image_ID, 
+        'N/A', 
+        'New Image Inserted', 
+        CONCAT(
+            'Inserted new account image: Image_ID=', NEW.Image_ID,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER UpdateLog_AccountImage
+AFTER UPDATE ON Account_Image
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'UPDATE', 
+        'Account_Image', 
+        OLD.Image_ID, 
+        'Old Image Updated', 
+        'New Image Updated', 
+        CONCAT(
+            'Updated account image: Image_ID=', OLD.Image_ID,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER DeleteLog_AccountImage
+AFTER DELETE ON Account_Image
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'DELETE', 
+        'Account_Image', 
+        OLD.Image_ID, 
+        'Image Deleted', 
+        'N/A', 
+        CONCAT(
+            'Deleted account image: Image_ID=', OLD.Image_ID,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
 
 CREATE TRIGGER InsertLog
 AFTER INSERT ON Accounts
