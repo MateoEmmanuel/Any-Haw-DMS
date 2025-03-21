@@ -264,3 +264,132 @@ BEGIN
         SELECT 'Account deleted successfully!' AS Message;
     END IF;
 END //
+
+
+-- triggers --
+
+
+CREATE TRIGGER InsertLog
+AFTER INSERT ON Accounts
+FOR EACH ROW
+BEGIN
+    DECLARE v_Type_Name VARCHAR(15);
+    DECLARE v_Position_Name VARCHAR(100);
+
+    -- Get the Account Type Name
+    SELECT Type_name INTO v_Type_Name FROM Account_Type WHERE Type_ID = NEW.Type_ID;
+
+    -- Get the Position Name
+    SELECT Position_name INTO v_Position_Name FROM Position_List WHERE Position_ID = NEW.Position_ID;
+
+    -- Insert into System_Log
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'INSERT', 
+        'Accounts', 
+        NEW.Account_ID, 
+        'N/A', 
+        NEW.Username, 
+        CONCAT(
+            'Inserted new account: Username=', NEW.Username, 
+            ', Type=', v_Type_Name, 
+            ', Position=', v_Position_Name, 
+            ', FirstName=', NEW.FirstName, 
+            ', MiddleName=', IFNULL(NEW.MiddleName, 'NULL'), 
+            ', LastName=', NEW.LastName, 
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+
+CREATE TRIGGER UpdateLog
+AFTER UPDATE ON Accounts
+FOR EACH ROW
+BEGIN
+    DECLARE v_Old_Type_Name VARCHAR(15);
+    DECLARE v_New_Type_Name VARCHAR(15);
+    DECLARE v_Old_Position_Name VARCHAR(100);
+    DECLARE v_New_Position_Name VARCHAR(100);
+
+    -- Get the old and new Account Type Names
+    SELECT Type_name INTO v_Old_Type_Name FROM Account_Type WHERE Type_ID = OLD.Type_ID;
+    SELECT Type_name INTO v_New_Type_Name FROM Account_Type WHERE Type_ID = NEW.Type_ID;
+
+    -- Get the old and new Position Names
+    SELECT Position_name INTO v_Old_Position_Name FROM Position_List WHERE Position_ID = OLD.Position_ID;
+    SELECT Position_name INTO v_New_Position_Name FROM Position_List WHERE Position_ID = NEW.Position_ID;
+
+    -- Insert into System_Log
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'UPDATE', 
+        'Accounts', 
+        OLD.Account_ID, 
+        OLD.Username, 
+        NEW.Username, 
+        CONCAT(
+            'Updated account: Username from "', OLD.Username, '" to "', NEW.Username, '"',
+            ', Type from "', v_Old_Type_Name, '" to "', v_New_Type_Name, '"',
+            ', Position from "', v_Old_Position_Name, '" to "', v_New_Position_Name, '"',
+            ', FirstName from "', OLD.FirstName, '" to "', NEW.FirstName, '"',
+            ', MiddleName from "', IFNULL(OLD.MiddleName, 'NULL'), '" to "', IFNULL(NEW.MiddleName, 'NULL'), '"',
+            ', LastName from "', OLD.LastName, '" to "', NEW.LastName, '"',
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER DeleteLog
+AFTER DELETE ON Accounts
+FOR EACH ROW
+BEGIN
+    DECLARE v_Old_Type_Name VARCHAR(15);
+    DECLARE v_Old_Position_Name VARCHAR(100);
+
+    -- Get the old Account Type Name
+    SELECT Type_name INTO v_Old_Type_Name FROM Account_Type WHERE Type_ID = OLD.Type_ID;
+
+    -- Get the old Position Name
+    SELECT Position_name INTO v_Old_Position_Name FROM Position_List WHERE Position_ID = OLD.Position_ID;
+
+    -- Insert into System_Log
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'DELETE', 
+        'Accounts', 
+        OLD.Account_ID, 
+        OLD.Username, 
+        'N/A', 
+        CONCAT(
+            'Deleted account: Username="', OLD.Username, '"',
+            ', Type="', v_Old_Type_Name, '"',
+            ', Position="', v_Old_Position_Name, '"',
+            ', FirstName="', OLD.FirstName, '"',
+            ', MiddleName="', IFNULL(OLD.MiddleName, 'NULL'), '"',
+            ', LastName="', OLD.LastName, '"',
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
