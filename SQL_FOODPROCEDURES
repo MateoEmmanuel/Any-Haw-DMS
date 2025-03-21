@@ -1,0 +1,95 @@
+DELIMITER //
+CREATE PROCEDURE UpdateAvailability(
+    IN p_ItemType ENUM('N_Food', 'Combo', 'Drink','Dessert'),
+    IN p_ItemID INT,
+    IN p_Availability TINYINT(1)
+)
+BEGIN
+    CASE p_ItemType
+        WHEN 'N_Food' THEN
+            UPDATE Food_List SET Availability = p_Availability WHERE Food_ID = p_ItemID;
+        WHEN 'Drink' THEN
+            UPDATE Drink_List SET Availability = p_Availability WHERE Drink_ID = p_ItemID;
+        WHEN 'Dessert' THEN
+            UPDATE Dessert_List SET Availability = p_Availability WHERE Dessert_ID = p_ItemID;
+        WHEN 'Combo' THEN
+            UPDATE Combo_Food_List SET Availability = p_Availability WHERE Combo_List_ID = p_ItemID;
+        ELSE
+            SELECT 'Error: Invalid Item Type!' AS Message;
+    END CASE;
+END //
+
+
+CREATE PROCEDURE UpdatePrice(
+    IN p_ItemType ENUM('N_Food', 'Combo', 'Drink','Dessert'),
+    IN p_ItemID INT,
+    IN p_NewPrice DECIMAL(10,2)
+)
+BEGIN
+    CASE p_ItemType
+        WHEN 'N_Food' THEN
+            UPDATE Food_List SET Price = p_NewPrice WHERE Food_ID = p_ItemID;
+        WHEN 'Drink' THEN
+            UPDATE Drink_List SET Price = p_NewPrice WHERE Drink_ID = p_ItemID;
+        WHEN 'Dessert' THEN
+            UPDATE Dessert_List SET Price = p_NewPrice WHERE Dessert_ID = p_ItemID;
+        WHEN 'Combo' THEN
+            UPDATE Combo_Food_List SET Price = p_NewPrice WHERE Combo_List_ID = p_ItemID;
+        ELSE
+            SELECT 'Error: Invalid Item Type!' AS Message;
+    END CASE;
+END //
+
+
+CREATE PROCEDURE UpdateDetail(
+    IN p_Item_ID INT,
+    IN p_Item_Type ENUM('N_Food', 'Combo'),
+    IN p_Description TEXT
+)
+BEGIN
+    IF p_Item_Type = 'N_Food' THEN
+        UPDATE Normal_Food_List
+        SET Description = p_Description
+        WHERE Food_ID = p_Item_ID;
+    ELSEIF p_Item_Type = 'Combo' THEN
+        UPDATE Combo_Food_Details
+        SET Description = p_Description
+        WHERE C_Details_ID = p_Item_ID;
+    ELSE
+        SELECT 'Error: Invalid Item Type or Item Type does not support descriptions!' AS Message;
+    END IF;
+END //
+
+
+
+CREATE PROCEDURE UpdateF_Image(
+    IN p_Item_ID INT,
+    IN p_Item_Type ENUM('N_Food', 'Drink', 'Dessert', 'Combo'),
+    IN p_Image LONGBLOB
+)
+BEGIN
+    DECLARE p_Image_ID INT;
+
+    -- Get the Image_ID based on the Item Type
+    IF p_Item_Type = 'N_Food' THEN
+        SELECT Image_ID INTO p_Image_ID FROM Normal_Food_List WHERE Food_ID = p_Item_ID;
+    ELSEIF p_Item_Type = 'Drink' THEN
+        SELECT Image_ID INTO p_Image_ID FROM Drink_List WHERE Drink_ID = p_Item_ID;
+    ELSEIF p_Item_Type = 'Dessert' THEN
+        SELECT Image_ID INTO p_Image_ID FROM Dessert_List WHERE Dessert_ID = p_Item_ID;
+    ELSEIF p_Item_Type = 'Combo' THEN
+        SELECT Image_ID INTO p_Image_ID FROM Combo_Food_Details WHERE C_Details_ID = p_Item_ID;
+    ELSE
+        SELECT 'Error: Invalid Item Type!' AS Message;       
+    END IF;
+
+    -- Check if Image_ID exists
+    IF p_Image_ID IS NOT NULL THEN
+        UPDATE Image_List
+        SET Image = p_Image
+        WHERE Image_ID = p_Image_ID;
+        SELECT 'Image updated successfully!' AS Message;
+    ELSE
+        SELECT 'Error: Image not found for the given item!' AS Message;
+    END IF;
+END //
