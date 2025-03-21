@@ -1,4 +1,5 @@
 -- Staff Account List Report
+DELLIMITER //
 CREATE PROCEDURE AccountReport()
 BEGIN
     SELECT 
