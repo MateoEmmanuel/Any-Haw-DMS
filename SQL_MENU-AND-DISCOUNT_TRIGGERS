@@ -1,0 +1,1062 @@
+CREATE TRIGGER InsertLog_ImageList
+AFTER INSERT ON Image_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'INSERT', 
+        'Image_List', 
+        NEW.Image_ID, 
+        'N/A', 
+        'New Image Inserted', 
+        CONCAT(
+            'Inserted new image: Image_ID=', NEW.Image_ID,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER UpdateLog_ImageList
+AFTER UPDATE ON Image_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'UPDATE', 
+        'Image_List', 
+        OLD.Image_ID, 
+        'Old Image Updated', 
+        'New Image Updated', 
+        CONCAT(
+            'Updated image: Image_ID=', OLD.Image_ID,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER DeleteLog_ImageList
+AFTER DELETE ON Image_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'DELETE', 
+        'Image_List', 
+        OLD.Image_ID, 
+        'Deleted Image', 
+        'N/A', 
+        CONCAT(
+            'Deleted image: Image_ID=', OLD.Image_ID,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER InsertLog_FoodCategory
+AFTER INSERT ON Food_Category
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'INSERT', 
+        'Food_Category', 
+        NEW.F_Category_ID, 
+        'N/A', 
+        NEW.Category_Name, 
+        CONCAT(
+            'Inserted new food category: Category_Name=', NEW.Category_Name,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER UpdateLog_FoodCategory
+AFTER UPDATE ON Food_Category
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'UPDATE', 
+        'Food_Category', 
+        OLD.F_Category_ID, 
+        OLD.Category_Name, 
+        NEW.Category_Name, 
+        CONCAT(
+            'Updated food category: Category_Name from ', OLD.Category_Name, 
+            ' to ', NEW.Category_Name,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER DeleteLog_FoodCategory
+AFTER DELETE ON Food_Category
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'DELETE', 
+        'Food_Category', 
+        OLD.F_Category_ID, 
+        OLD.Category_Name, 
+        'N/A', 
+        CONCAT(
+            'Deleted food category: Category_Name=', OLD.Category_Name,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER InsertLog_FoodList
+AFTER INSERT ON Food_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'INSERT', 
+        'Food_List', 
+        NEW.Food_ID, 
+        'N/A', 
+        NEW.Food_Name, 
+        CONCAT(
+            'Inserted new food item: Food_Name=', NEW.Food_Name,
+            ', Availability=', NEW.Availability,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER UpdateLog_FoodList
+AFTER UPDATE ON Food_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'UPDATE', 
+        'Food_List', 
+        OLD.Food_ID, 
+        OLD.Food_Name, 
+        NEW.Food_Name, 
+        CONCAT(
+            'Updated food item: Food_Name from ', OLD.Food_Name, 
+            ' to ', NEW.Food_Name, 
+            ', Availability from ', OLD.Availability, 
+            ' to ', NEW.Availability,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER DeleteLog_FoodList
+AFTER DELETE ON Food_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'DELETE', 
+        'Food_List', 
+        OLD.Food_ID, 
+        OLD.Food_Name, 
+        'N/A', 
+        CONCAT(
+            'Deleted food item: Food_Name=', OLD.Food_Name,
+            ', Availability=', OLD.Availability,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER InsertLog_NormalFoodList
+AFTER INSERT ON Normal_Food_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'INSERT', 
+        'Normal_Food_List', 
+        NEW.N_List_ID, 
+        'N/A', 
+        NEW.Code_Name, 
+        CONCAT(
+            'Inserted normal food item: Food_ID=', NEW.Food_ID,
+            ', Category_ID=', NEW.F_Category_ID,
+            ', Image_ID=', NEW.Image_ID,
+            ', Description=', IFNULL(NEW.Description, 'NULL'),
+            ', Price=', NEW.Price,
+            ', Code_Name=', NEW.Code_Name,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER UpdateLog_NormalFoodList
+AFTER UPDATE ON Normal_Food_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'UPDATE', 
+        'Normal_Food_List', 
+        OLD.N_List_ID, 
+        OLD.Code_Name, 
+        NEW.Code_Name, 
+        CONCAT(
+            'Updated normal food item: Food_ID=', OLD.Food_ID,
+            ', Category_ID from ', OLD.F_Category_ID, ' to ', NEW.F_Category_ID,
+            ', Image_ID from ', OLD.Image_ID, ' to ', NEW.Image_ID,
+            ', Description from ', IFNULL(OLD.Description, 'NULL'), ' to ', IFNULL(NEW.Description, 'NULL'),
+            ', Price from ', OLD.Price, ' to ', NEW.Price,
+            ', Code_Name from ', OLD.Code_Name, ' to ', NEW.Code_Name,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER DeleteLog_NormalFoodList
+AFTER DELETE ON Normal_Food_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'DELETE', 
+        'Normal_Food_List', 
+        OLD.N_List_ID, 
+        OLD.Code_Name, 
+        'N/A', 
+        CONCAT(
+            'Deleted normal food item: Food_ID=', OLD.Food_ID,
+            ', Category_ID=', OLD.F_Category_ID,
+            ', Image_ID=', OLD.Image_ID,
+            ', Description=', IFNULL(OLD.Description, 'NULL'),
+            ', Price=', OLD.Price,
+            ', Code_Name=', OLD.Code_Name,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER InsertLog_DrinkCategory
+AFTER INSERT ON Drink_Category
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'INSERT', 
+        'Drink_Category', 
+        NEW.Dr_Category_ID, 
+        'N/A', 
+        NEW.Category_Name, 
+        CONCAT(
+            'Inserted drink category: Category_Name=', NEW.Category_Name, 
+            ', Availability=', NEW.Availability, 
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER UpdateLog_DrinkCategory
+AFTER UPDATE ON Drink_Category
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'UPDATE', 
+        'Drink_Category', 
+        OLD.Dr_Category_ID, 
+        OLD.Category_Name, 
+        NEW.Category_Name, 
+        CONCAT(
+            'Updated drink category: Category_Name from ', OLD.Category_Name, ' to ', NEW.Category_Name, 
+            ', Availability from ', OLD.Availability, ' to ', NEW.Availability,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER DeleteLog_DrinkCategory
+AFTER DELETE ON Drink_Category
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'DELETE', 
+        'Drink_Category', 
+        OLD.Dr_Category_ID, 
+        OLD.Category_Name, 
+        'N/A', 
+        CONCAT(
+            'Deleted drink category: Category_Name=', OLD.Category_Name, 
+            ', Availability=', OLD.Availability, 
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER InsertLog_DrinkList
+AFTER INSERT ON Drink_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'INSERT', 
+        'Drink_List', 
+        NEW.Drink_ID, 
+        'N/A', 
+        NEW.Drink_Name, 
+        CONCAT(
+            'Inserted drink: Drink_Name=', NEW.Drink_Name, 
+            ', Code_Name=', NEW.Code_Name, 
+            ', Category_ID=', NEW.Dr_Category_ID, 
+            ', Image_ID=', NEW.Image_ID, 
+            ', Price=', NEW.Price, 
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER UpdateLog_DrinkList
+AFTER UPDATE ON Drink_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'UPDATE', 
+        'Drink_List', 
+        OLD.Drink_ID, 
+        OLD.Drink_Name, 
+        NEW.Drink_Name, 
+        CONCAT(
+            'Updated drink: Drink_Name from ', OLD.Drink_Name, ' to ', NEW.Drink_Name, 
+            ', Code_Name from ', OLD.Code_Name, ' to ', NEW.Code_Name, 
+            ', Category_ID from ', OLD.Dr_Category_ID, ' to ', NEW.Dr_Category_ID, 
+            ', Image_ID from ', OLD.Image_ID, ' to ', NEW.Image_ID, 
+            ', Price from ', OLD.Price, ' to ', NEW.Price, 
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER DeleteLog_DrinkList
+AFTER DELETE ON Drink_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'DELETE', 
+        'Drink_List', 
+        OLD.Drink_ID, 
+        OLD.Drink_Name, 
+        'N/A', 
+        CONCAT(
+            'Deleted drink: Drink_Name=', OLD.Drink_Name, 
+            ', Code_Name=', OLD.Code_Name, 
+            ', Category_ID=', OLD.Dr_Category_ID, 
+            ', Image_ID=', OLD.Image_ID, 
+            ', Price=', OLD.Price, 
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER InsertLog_DessertCategory
+AFTER INSERT ON Dessert_Category
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'INSERT', 
+        'Dessert_Category', 
+        NEW.De_Category_ID, 
+        'N/A', 
+        NEW.Category_Name, 
+        CONCAT(
+            'Inserted dessert category: Category_Name=', NEW.Category_Name, 
+            ', Availability=', NEW.Availability, 
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER UpdateLog_DessertCategory
+AFTER UPDATE ON Dessert_Category
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'UPDATE', 
+        'Dessert_Category', 
+        OLD.De_Category_ID, 
+        OLD.Category_Name, 
+        NEW.Category_Name, 
+        CONCAT(
+            'Updated dessert category: Category_Name from ', OLD.Category_Name, ' to ', NEW.Category_Name, 
+            ', Availability from ', OLD.Availability, ' to ', NEW.Availability, 
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+CREATE TRIGGER DeleteLog_DessertCategory
+AFTER DELETE ON Dessert_Category
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'DELETE', 
+        'Dessert_Category', 
+        OLD.De_Category_ID, 
+        OLD.Category_Name, 
+        'N/A', 
+        CONCAT(
+            'Deleted dessert category: Category_Name=', OLD.Category_Name, 
+            ', Availability=', OLD.Availability, 
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+-- Insert Trigger
+CREATE TRIGGER InsertLog_DessertList
+AFTER INSERT ON Dessert_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'INSERT', 
+        'Dessert_List', 
+        NEW.Dessert_ID, 
+        'N/A', 
+        NEW.Dessert_Name, 
+        CONCAT(
+            'Inserted dessert: Dessert_Name=', NEW.Dessert_Name, 
+            ', Code_Name=', NEW.Code_Name, 
+            ', Price=', NEW.Price, 
+            ', Category=', (SELECT Category_Name FROM Dessert_Category WHERE De_Category_ID = NEW.De_Category_ID), 
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+-- Update Trigger
+CREATE TRIGGER UpdateLog_DessertList
+AFTER UPDATE ON Dessert_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'UPDATE', 
+        'Dessert_List', 
+        OLD.Dessert_ID, 
+        OLD.Dessert_Name, 
+        NEW.Dessert_Name, 
+        CONCAT(
+            'Updated dessert: Dessert_Name from ', OLD.Dessert_Name, ' to ', NEW.Dessert_Name, 
+            ', Code_Name from ', OLD.Code_Name, ' to ', NEW.Code_Name, 
+            ', Price from ', OLD.Price, ' to ', NEW.Price, 
+            ', Category from ', (SELECT Category_Name FROM Dessert_Category WHERE De_Category_ID = OLD.De_Category_ID), 
+            ' to ', (SELECT Category_Name FROM Dessert_Category WHERE De_Category_ID = NEW.De_Category_ID), 
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+-- Delete Trigger
+CREATE TRIGGER DeleteLog_DessertList
+AFTER DELETE ON Dessert_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'DELETE', 
+        'Dessert_List', 
+        OLD.Dessert_ID, 
+        OLD.Dessert_Name, 
+        'N/A', 
+        CONCAT(
+            'Deleted dessert: Dessert_Name=', OLD.Dessert_Name, 
+            ', Code_Name=', OLD.Code_Name, 
+            ', Price=', OLD.Price, 
+            ', Category=', (SELECT Category_Name FROM Dessert_Category WHERE De_Category_ID = OLD.De_Category_ID), 
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+-- Insert Trigger
+CREATE TRIGGER InsertLog_ComboCategory
+AFTER INSERT ON Combo_Category
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'INSERT', 
+        'Combo_Category', 
+        NEW.C_Category_ID, 
+        'N/A', 
+        NEW.Category_Name, 
+        CONCAT(
+            'Inserted combo category: Category_Name=', NEW.Category_Name, 
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+-- Update Trigger
+CREATE TRIGGER UpdateLog_ComboCategory
+AFTER UPDATE ON Combo_Category
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'UPDATE', 
+        'Combo_Category', 
+        OLD.C_Category_ID, 
+        OLD.Category_Name, 
+        NEW.Category_Name, 
+        CONCAT(
+            'Updated combo category: Category_Name from ', OLD.Category_Name, ' to ', NEW.Category_Name, 
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+-- Delete Trigger
+CREATE TRIGGER DeleteLog_ComboCategory
+AFTER DELETE ON Combo_Category
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'DELETE', 
+        'Combo_Category', 
+        OLD.C_Category_ID, 
+        OLD.Category_Name, 
+        'N/A', 
+        CONCAT(
+            'Deleted combo category: Category_Name=', OLD.Category_Name, 
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+-- Insert Trigger
+CREATE TRIGGER InsertLog_ComboFoodDetails
+AFTER INSERT ON Combo_Food_Details
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'INSERT', 
+        'Combo_Food_Details', 
+        NEW.C_Details_ID, 
+        'N/A', 
+        CONCAT('Image_ID=', NEW.Image_ID, ', Price=', NEW.Price), 
+        CONCAT(
+            'Inserted combo food details: Image_ID=', NEW.Image_ID, 
+            ', Price=', NEW.Price, 
+            ', Description=', NEW.Description,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+-- Update Trigger
+CREATE TRIGGER UpdateLog_ComboFoodDetails
+AFTER UPDATE ON Combo_Food_Details
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'UPDATE', 
+        'Combo_Food_Details', 
+        OLD.C_Details_ID, 
+        CONCAT('Image_ID=', OLD.Image_ID, ', Price=', OLD.Price), 
+        CONCAT('Image_ID=', NEW.Image_ID, ', Price=', NEW.Price), 
+        CONCAT(
+            'Updated combo food details: Image_ID from ', OLD.Image_ID, ' to ', NEW.Image_ID, 
+            ', Price from ', OLD.Price, ' to ', NEW.Price, 
+            ', Description from "', OLD.Description, '" to "', NEW.Description, '"',
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+-- Delete Trigger
+CREATE TRIGGER DeleteLog_ComboFoodDetails
+AFTER DELETE ON Combo_Food_Details
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'DELETE', 
+        'Combo_Food_Details', 
+        OLD.C_Details_ID, 
+        CONCAT('Image_ID=', OLD.Image_ID, ', Price=', OLD.Price), 
+        'N/A', 
+        CONCAT(
+            'Deleted combo food details: Image_ID=', OLD.Image_ID, 
+            ', Price=', OLD.Price, 
+            ', Description=', OLD.Description,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+-- Insert Trigger
+CREATE TRIGGER InsertLog_ComboFoodList
+AFTER INSERT ON Combo_Food_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'INSERT', 
+        'Combo_Food_List', 
+        NEW.Combo_List_ID, 
+        'N/A', 
+        NEW.Code_Name, 
+        CONCAT(
+            'Inserted combo food list: Code_Name=', NEW.Code_Name, 
+            ', C_Category_ID=', NEW.C_Category_ID, 
+            ', C_Details_ID=', NEW.C_Details_ID,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+-- Update Trigger
+CREATE TRIGGER UpdateLog_ComboFoodList
+AFTER UPDATE ON Combo_Food_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'UPDATE', 
+        'Combo_Food_List', 
+        OLD.Combo_List_ID, 
+        OLD.Code_Name, 
+        NEW.Code_Name, 
+        CONCAT(
+            'Updated combo food list: Code_Name from ', OLD.Code_Name, ' to ', NEW.Code_Name, 
+            ', C_Category_ID from ', OLD.C_Category_ID, ' to ', NEW.C_Category_ID, 
+            ', C_Details_ID from ', OLD.C_Details_ID, ' to ', NEW.C_Details_ID,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+-- Delete Trigger
+CREATE TRIGGER DeleteLog_ComboFoodList
+AFTER DELETE ON Combo_Food_List
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'DELETE', 
+        'Combo_Food_List', 
+        OLD.Combo_List_ID, 
+        OLD.Code_Name, 
+        'N/A', 
+        CONCAT(
+            'Deleted combo food list: Code_Name=', OLD.Code_Name, 
+            ', C_Category_ID=', OLD.C_Category_ID, 
+            ', C_Details_ID=', OLD.C_Details_ID,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+-- Insert Trigger
+CREATE TRIGGER InsertLog_ComboFoodOrganizer
+AFTER INSERT ON Combo_Food_Organizer
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'INSERT', 
+        'Combo_Food_Organizer', 
+        NEW.Combo_Food_ID, 
+        'N/A', 
+        CONCAT(NEW.Item_Type, ' - ', NEW.Item_ID), 
+        CONCAT(
+            'Inserted into combo food organizer: Item_Type=', NEW.Item_Type, 
+            ', Item_ID=', NEW.Item_ID, 
+            ', Combo_List_ID=', NEW.Combo_List_ID,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+-- Update Trigger
+CREATE TRIGGER UpdateLog_ComboFoodOrganizer
+AFTER UPDATE ON Combo_Food_Organizer
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'UPDATE', 
+        'Combo_Food_Organizer', 
+        OLD.Combo_Food_ID, 
+        CONCAT(OLD.Item_Type, ' - ', OLD.Item_ID), 
+        CONCAT(NEW.Item_Type, ' - ', NEW.Item_ID), 
+        CONCAT(
+            'Updated combo food organizer: Item_Type from ', OLD.Item_Type, ' to ', NEW.Item_Type, 
+            ', Item_ID from ', OLD.Item_ID, ' to ', NEW.Item_ID, 
+            ', Combo_List_ID from ', OLD.Combo_List_ID, ' to ', NEW.Combo_List_ID,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+-- Delete Trigger
+CREATE TRIGGER DeleteLog_ComboFoodOrganizer
+AFTER DELETE ON Combo_Food_Organizer
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'DELETE', 
+        'Combo_Food_Organizer', 
+        OLD.Combo_Food_ID, 
+        CONCAT(OLD.Item_Type, ' - ', OLD.Item_ID), 
+        'N/A', 
+        CONCAT(
+            'Deleted from combo food organizer: Item_Type=', OLD.Item_Type, 
+            ', Item_ID=', OLD.Item_ID, 
+            ', Combo_List_ID=', OLD.Combo_List_ID,
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+-- Insert Trigger
+CREATE TRIGGER InsertLog_Discount
+AFTER INSERT ON Discount_Table
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'INSERT', 
+        'Discount_Table', 
+        NEW.Discount_ID, 
+        'N/A', 
+        CONCAT(NEW.Discount_Name, ' - ', NEW.Discount_Percent, '%'), 
+        CONCAT(
+            'Inserted new discount: Name=', NEW.Discount_Name, 
+            ', Percent=', NEW.Discount_Percent, '%',
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+-- Update Trigger
+CREATE TRIGGER UpdateLog_Discount
+AFTER UPDATE ON Discount_Table
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'UPDATE', 
+        'Discount_Table', 
+        OLD.Discount_ID, 
+        CONCAT(OLD.Discount_Name, ' - ', OLD.Discount_Percent, '%'), 
+        CONCAT(NEW.Discount_Name, ' - ', NEW.Discount_Percent, '%'), 
+        CONCAT(
+            'Updated discount: Name from ', OLD.Discount_Name, ' to ', NEW.Discount_Name, 
+            ', Percent from ', OLD.Discount_Percent, '% to ', NEW.Discount_Percent, '%',
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
+
+-- Delete Trigger
+CREATE TRIGGER DeleteLog_Discount
+AFTER DELETE ON Discount_Table
+FOR EACH ROW
+BEGIN
+    INSERT INTO System_Log (
+        Action_Type, 
+        Table_Name, 
+        Affected_Row_ID, 
+        Old_Data, 
+        New_Data, 
+        Full_Details
+    ) 
+    VALUES (
+        'DELETE', 
+        'Discount_Table', 
+        OLD.Discount_ID, 
+        CONCAT(OLD.Discount_Name, ' - ', OLD.Discount_Percent, '%'), 
+        'N/A', 
+        CONCAT(
+            'Deleted discount: Name=', OLD.Discount_Name, 
+            ', Percent=', OLD.Discount_Percent, '%',
+            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        )
+    );
+END //
