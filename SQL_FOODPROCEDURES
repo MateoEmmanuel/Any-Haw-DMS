@@ -155,9 +155,6 @@ BEGIN
 END //
 
 
-
-
-
 -- Updates --
 CREATE PROCEDURE UpdateAvailability(
     IN p_ItemType ENUM('N_Food', 'Combo', 'Drink','Dessert'),
@@ -255,5 +252,164 @@ BEGIN
 END //
 
 
+-- DELETE --
+CREATE PROCEDURE DeleteFood(
+    IN p_Food_ID INT
+)
+BEGIN
+    DECLARE p_Image_ID INT;
 
+    -- Get Image_ID from Normal_Food_List
+    SELECT Image_ID INTO p_Image_ID FROM Normal_Food_List WHERE Food_ID = p_Food_ID;
 
+    -- Delete the food details
+    DELETE FROM Normal_Food_List WHERE Food_ID = p_Food_ID;
+
+    -- Delete the food from Food_List
+    DELETE FROM Food_List WHERE Food_ID = p_Food_ID;
+
+    -- Delete the image if it exists
+    IF p_Image_ID IS NOT NULL THEN
+        DELETE FROM Image_List WHERE Image_ID = p_Image_ID;
+    END IF;
+
+    SELECT 'Food deleted successfully!' AS Message;
+END //
+
+CREATE PROCEDURE DeleteFoodCategory(
+    IN p_Category_ID INT
+)
+BEGIN
+    DECLARE p_ReferenceExists INT;
+
+    -- Check if the category is referenced in Normal_Food_List
+    SELECT COUNT(*) INTO p_ReferenceExists FROM Normal_Food_List WHERE F_Category_ID = p_Category_ID;
+
+    IF p_ReferenceExists > 0 THEN
+        SELECT 'Error: Cannot delete category, it is referenced in food items!' AS Message;
+    ELSE
+        DELETE FROM Food_Category WHERE Category_ID = p_Category_ID;
+        SELECT 'Food category deleted successfully!' AS Message;
+    END IF;
+END //
+
+CREATE PROCEDURE DeleteDrink(
+    IN p_Drink_ID INT
+)
+BEGIN
+    DECLARE p_Image_ID INT;
+
+    -- Get Image_ID from Drink_List
+    SELECT Image_ID INTO p_Image_ID FROM Drink_List WHERE Drink_ID = p_Drink_ID;
+
+    -- Delete the drink
+    DELETE FROM Drink_List WHERE Drink_ID = p_Drink_ID;
+
+    -- Delete the image if it exists
+    IF p_Image_ID IS NOT NULL THEN
+        DELETE FROM Image_List WHERE Image_ID = p_Image_ID;
+    END IF;
+
+    SELECT 'Drink deleted successfully!' AS Message;
+END //
+
+CREATE PROCEDURE DeleteDrinkCategory(
+    IN p_Category_ID INT
+)
+BEGIN
+    DECLARE p_ReferenceExists INT;
+
+    -- Check if the category is referenced in Drink_List
+    SELECT COUNT(*) INTO p_ReferenceExists FROM Drink_List WHERE Dr_Category_ID = p_Category_ID;
+
+    IF p_ReferenceExists > 0 THEN
+        SELECT 'Error: Cannot delete category, it is referenced in drinks!' AS Message;
+    ELSE
+        DELETE FROM Drink_Category WHERE Category_ID = p_Category_ID;
+        SELECT 'Drink category deleted successfully!' AS Message;
+    END IF;
+END //
+
+CREATE PROCEDURE DeleteDessert(
+    IN p_Dessert_ID INT
+)
+BEGIN
+    DECLARE p_Image_ID INT;
+
+    -- Get Image_ID from Dessert_List
+    SELECT Image_ID INTO p_Image_ID FROM Dessert_List WHERE Dessert_ID = p_Dessert_ID;
+
+    -- Delete the dessert
+    DELETE FROM Dessert_List WHERE Dessert_ID = p_Dessert_ID;
+
+    -- Delete the image if it exists
+    IF p_Image_ID IS NOT NULL THEN
+        DELETE FROM Image_List WHERE Image_ID = p_Image_ID;
+    END IF;
+
+    SELECT 'Dessert deleted successfully!' AS Message;
+END //
+
+CREATE PROCEDURE DeleteDessertCategory(
+    IN p_Category_ID INT
+)
+BEGIN
+    DECLARE p_ReferenceExists INT;
+
+    -- Check if the category is referenced in Dessert_List
+    SELECT COUNT(*) INTO p_ReferenceExists FROM Dessert_List WHERE De_Category_ID = p_Category_ID;
+
+    IF p_ReferenceExists > 0 THEN
+        SELECT 'Error: Cannot delete category, it is referenced in desserts!' AS Message;
+    ELSE
+        DELETE FROM Dessert_Category WHERE Category_ID = p_Category_ID;
+        SELECT 'Dessert category deleted successfully!' AS Message;
+    END IF;
+END //
+
+CREATE PROCEDURE DeleteCombo(
+    IN p_Combo_List_ID INT
+)
+BEGIN
+    DECLARE p_C_Details_ID INT;
+    DECLARE p_Image_ID INT;
+
+    -- Get C_Details_ID from Combo_Food_List
+    SELECT C_Details_ID INTO p_C_Details_ID FROM Combo_Food_List WHERE Combo_List_ID = p_Combo_List_ID;
+
+    -- Get Image_ID from Combo_Food_Details
+    SELECT Image_ID INTO p_Image_ID FROM Combo_Food_Details WHERE C_Details_ID = p_C_Details_ID;
+
+    -- Delete from Combo_Food_Organizer first (if applicable)
+    DELETE FROM Combo_Food_Organizer WHERE Combo_List_ID = p_Combo_List_ID;
+
+    -- Delete from Combo_Food_List
+    DELETE FROM Combo_Food_List WHERE Combo_List_ID = p_Combo_List_ID;
+
+    -- Delete from Combo_Food_Details
+    DELETE FROM Combo_Food_Details WHERE C_Details_ID = p_C_Details_ID;
+
+    -- Delete the image if it exists
+    IF p_Image_ID IS NOT NULL THEN
+        DELETE FROM Image_List WHERE Image_ID = p_Image_ID;
+    END IF;
+
+    SELECT 'Combo deleted successfully!' AS Message;
+END //
+
+CREATE PROCEDURE DeleteComboCategory(
+    IN p_Category_ID INT
+)
+BEGIN
+    DECLARE p_ReferenceExists INT;
+
+    -- Check if the category is referenced in Combo_Food_List
+    SELECT COUNT(*) INTO p_ReferenceExists FROM Combo_Food_List WHERE C_Category_ID = p_Category_ID;
+
+    IF p_ReferenceExists > 0 THEN
+        SELECT 'Error: Cannot delete category, it is referenced in combo items!' AS Message;
+    ELSE
+        DELETE FROM Combo_Category WHERE Category_ID = p_Category_ID;
+        SELECT 'Combo category deleted successfully!' AS Message;
+    END IF;
+END //
