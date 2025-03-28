@@ -406,7 +406,7 @@ BEGIN
         'N/A', 
         CONCAT(NEW.Discount_Name, ' - ', NEW.Discount_Percent, '%'), 
         CONCAT(
-            'Inserted NEW discount: Discount Name: ', NEW.Discount_Name, 
+            'Inserted NEW discount, Discount Name: ', NEW.Discount_Name, 
             ', Discount: ', DiscountName,
             ', Percent: ', NEW.Discount_Percent, '%',
             ' Action Done at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
