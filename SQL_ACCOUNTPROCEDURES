@@ -285,11 +285,10 @@ BEGIN
         'Account_Type', 
         NEW.Type_ID, 
         'N/A', 
-        NEW.Type_name, 
+        Concat(NEW.Type_ID, NEW.Type_name), 
         CONCAT(
-            'Inserted new account type: Type_ID=', NEW.Type_ID, 
-            ', Type_Name="', NEW.Type_name, '"',
-            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+            'Inserted new account type | Type_Name: ', NEW.Type_name,
+            ' | at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
         )
     );
 END //
@@ -310,12 +309,11 @@ BEGIN
         'UPDATE', 
         'Account_Type', 
         OLD.Type_ID, 
-        OLD.Type_name, 
-        NEW.Type_name, 
+        concat(OLD.Type_ID, OLD.Type_name), 
+        concat(OLD.Type_ID, NEW.Type_name),  
         CONCAT(
-            'Updated account type: Type_ID=', OLD.Type_ID, 
-            ', Type_Name from "', OLD.Type_name, '" to "', NEW.Type_name, '"',
-            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+            'Updated account type| Type Name: ', OLD.Type_name, ', to: ', NEW.Type_name,
+            ' | at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
         )
     );
 END //
@@ -336,12 +334,11 @@ BEGIN
         'DELETE', 
         'Account_Type', 
         OLD.Type_ID, 
-        OLD.Type_name, 
+        Concat(OLD.Type_ID, OLD.Type_name),
         'N/A', 
         CONCAT(
-            'Deleted account type: Type_ID=', OLD.Type_ID, 
-            ', Type_Name="', OLD.Type_name, '"',
-            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+            'Deleted account type | Type Name: ', OLD.Type_name,
+            ' | at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
         )
     );
 END //
@@ -365,10 +362,9 @@ BEGIN
         'N/A', 
         NEW.Position_name, 
         CONCAT(
-            'Inserted new position: Position_ID=', NEW.Position_ID, 
-            ', Position_Name="', NEW.Position_name, '"', 
-            ', Salary=', NEW.Salary,
-            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+            'Inserted new position: Position Name: ', NEW.Position_name, 
+            ' | Salary: ', NEW.Salary,
+            ' | at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
         )
     );
 END //
@@ -389,13 +385,12 @@ BEGIN
         'UPDATE', 
         'Position_List', 
         OLD.Position_ID, 
-        OLD.Position_name, 
-        NEW.Position_name, 
+        Concat(OLD.Position_ID, OLD.Position_name, OLD.Salary),
+        Concat(OLD.Position_ID, NEW.Position_name, NEW.Salary),
         CONCAT(
-            'Updated position: Position_ID=', OLD.Position_ID, 
-            ', Position_Name from "', OLD.Position_name, '" to "', NEW.Position_name, '"', 
-            ', Salary from ', OLD.Salary, ' to ', NEW.Salary,
-            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+            'Updated position | Position Name: ', OLD.Position_name, ', to: ', NEW.Position_name, '"', 
+            ' | Salary: ', OLD.Salary, ', to: ', NEW.Salary,
+            ' | at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
         )
     );
 END //
@@ -419,10 +414,9 @@ BEGIN
         OLD.Position_name, 
         'N/A', 
         CONCAT(
-            'Deleted position: Position_ID=', OLD.Position_ID, 
-            ', Position_Name="', OLD.Position_name, '"', 
-            ', Salary=', OLD.Salary,
-            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+            'Deleted position | Position Name: ', OLD.Position_name, 
+            ' | Salary: ', OLD.Salary,
+            ' | at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
         )
     );
 END //
@@ -446,8 +440,8 @@ BEGIN
         'N/A', 
         'New Image Inserted', 
         CONCAT(
-            'Inserted new account image: Image_ID=', NEW.Image_ID,
-            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+            'Inserted new account image | Image ID: ', NEW.Image_ID,
+            ' | at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
         )
     );
 END //
@@ -471,8 +465,8 @@ BEGIN
         'Old Image Updated', 
         'New Image Updated', 
         CONCAT(
-            'Updated account image: Image_ID=', OLD.Image_ID,
-            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+            'Updated account image | Image ID: ', OLD.Image_ID,
+            ' | at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
         )
     );
 END //
@@ -496,8 +490,8 @@ BEGIN
         'Image Deleted', 
         'N/A', 
         CONCAT(
-            'Deleted account image: Image_ID=', OLD.Image_ID,
-            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+            'Deleted account image | Image ID: ', OLD.Image_ID,
+            ' | at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
         )
     );
 END //
@@ -510,10 +504,14 @@ BEGIN
     DECLARE v_Position_Name VARCHAR(100);
 
     -- Get the Account Type Name
-    SELECT Type_name INTO v_Type_Name FROM Account_Type WHERE Type_ID = NEW.Type_ID;
+    SELECT Type_name INTO v_Type_Name 
+    FROM Account_Type 
+    WHERE Type_ID = NEW.Type_ID;
 
     -- Get the Position Name
-    SELECT Position_name INTO v_Position_Name FROM Position_List WHERE Position_ID = NEW.Position_ID;
+    SELECT Position_name INTO v_Position_Name 
+    FROM Position_List 
+    WHERE Position_ID = NEW.Position_ID;
 
     -- Insert into System_Log
     INSERT INTO System_Log (
@@ -529,15 +527,15 @@ BEGIN
         'Accounts', 
         NEW.Account_ID, 
         'N/A', 
-        NEW.Username, 
+        Concat(NEW.Account_ID, NEW.Username,NEW.Type_ID,NEW.Position_ID,NEW.FirstName,IFNULL(NEW.MiddleName, 'N/A'),NEW.LastName), 
         CONCAT(
-            'Inserted new account: Username=', NEW.Username, 
-            ', Type=', v_Type_Name, 
-            ', Position=', v_Position_Name, 
-            ', FirstName=', NEW.FirstName, 
-            ', MiddleName=', IFNULL(NEW.MiddleName, 'NULL'), 
-            ', LastName=', NEW.LastName, 
-            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+            'Inserted new account | Username: ', NEW.Username, 
+            ' | Type: ', v_Type_Name, 
+            ' | Position: ', v_Position_Name, 
+            ' | FirstName: ', NEW.FirstName, 
+            ' | MiddleName: ', IFNULL(NEW.MiddleName, 'N/A'), 
+            ' | LastName: ', NEW.LastName, 
+            ' | at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
         )
     );
 END //
@@ -551,14 +549,66 @@ BEGIN
     DECLARE v_New_Type_Name VARCHAR(15);
     DECLARE v_Old_Position_Name VARCHAR(100);
     DECLARE v_New_Position_Name VARCHAR(100);
+    DECLARE Username VARCHAR(100);
+    DECLARE A_Type VARCHAR(100);
+    DECLARE Position VARCHAR(100);
+    DECLARE Fname VARCHAR(100);
+    DECLARE Mname VARCHAR(100);
+    DECLARE Lname VARCHAR(100);
 
     -- Get the old and new Account Type Names
-    SELECT Type_name INTO v_Old_Type_Name FROM Account_Type WHERE Type_ID = OLD.Type_ID;
-    SELECT Type_name INTO v_New_Type_Name FROM Account_Type WHERE Type_ID = NEW.Type_ID;
+    SELECT Type_name INTO v_Old_Type_Name 
+    FROM Account_Type 
+    WHERE Type_ID = OLD.Type_ID;
+    
+    SELECT Type_name INTO v_New_Type_Name 
+    FROM Account_Type 
+    WHERE Type_ID = NEW.Type_ID;
 
     -- Get the old and new Position Names
-    SELECT Position_name INTO v_Old_Position_Name FROM Position_List WHERE Position_ID = OLD.Position_ID;
-    SELECT Position_name INTO v_New_Position_Name FROM Position_List WHERE Position_ID = NEW.Position_ID;
+    SELECT Position_name INTO v_Old_Position_Name 
+    FROM Position_List 
+    WHERE Position_ID = OLD.Position_ID;
+    
+    SELECT Position_name INTO v_New_Position_Name 
+    FROM Position_List 
+    WHERE Position_ID = NEW.Position_ID;
+    
+    IF OLD.Username != NEW.Username THEN
+		SET Username = Concat('Updated account | Username: ', OLD.Username, ', to: ', NEW.Username);
+	ELSE
+		SET Username = Concat('Updated account | Username: ', OLD.Username);
+    END IF;
+    
+    IF OLD.Type_ID != NEW.Type_ID THEN
+		SET A_Type = Concat(' | Type: ', v_Old_Type_Name, ', to: ', v_New_Type_Name);
+	ELSE
+		SET A_Type = Concat(' | Type: ', v_Old_Type_Name);
+    END IF;
+    
+    IF OLD.Position_ID != NEW.Position_ID THEN
+		SET Position = Concat(' | Position: ', v_Old_Position_Name, ', to: ', v_New_Position_Name);
+	ELSE
+		SET Position = Concat(' | Position: ', v_Old_Position_Name);
+    END IF;
+    
+    IF OLD.FirstName != NEW.FirstName THEN
+		SET Fname = Concat(' | FirstName: ', OLD.FirstName, ', to: ', NEW.FirstName);
+	ELSE
+		SET Fname = Concat(' | FirstName: ', OLD.FirstName);
+    END IF;
+    
+    IF OLD.MiddleName != NEW.MiddleName THEN
+		SET Mname = Concat(' | MiddleName: ', IFNULL(OLD.MiddleName, 'N/A'), ', to: ', IFNULL(NEW.MiddleName, 'N/A'));
+	ELSE
+		SET Mname = Concat(' | MiddleName: ', IFNULL(OLD.MiddleName, 'N/A'));
+    END IF;
+    
+    IF OLD.LastName != NEW.LastName THEN
+		SET Lname = Concat(' | LastName: ', OLD.LastName, ', to: ', NEW.LastName);
+	ELSE
+		SET Lname = Concat(' | LastName: ', OLD.LastName);
+    END IF;
 
     -- Insert into System_Log
     INSERT INTO System_Log (
@@ -573,16 +623,10 @@ BEGIN
         'UPDATE', 
         'Accounts', 
         OLD.Account_ID, 
-        OLD.Username, 
-        NEW.Username, 
-        CONCAT(
-            'Updated account: Username from "', OLD.Username, '" to "', NEW.Username, '"',
-            ', Type from "', v_Old_Type_Name, '" to "', v_New_Type_Name, '"',
-            ', Position from "', v_Old_Position_Name, '" to "', v_New_Position_Name, '"',
-            ', FirstName from "', OLD.FirstName, '" to "', NEW.FirstName, '"',
-            ', MiddleName from "', IFNULL(OLD.MiddleName, 'NULL'), '" to "', IFNULL(NEW.MiddleName, 'NULL'), '"',
-            ', LastName from "', OLD.LastName, '" to "', NEW.LastName, '"',
-            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+        Concat(OLD.Account_ID, OLD.Username, OLD.Type_ID, OLD.Position_ID, OLD.FirstName, OLD.MiddleName, OLD.LastName),
+        Concat(OLD.Account_ID, NEW.Username, NEW.Type_ID, NEW.Position_ID, NEW.FirstName, NEW.MiddleName, NEW.LastName),
+        CONCAT(Username, A_Type, Positon, Fname, Mname, Lname,            
+            ' | at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
         )
     );
 END //
@@ -595,10 +639,14 @@ BEGIN
     DECLARE v_Old_Position_Name VARCHAR(100);
 
     -- Get the old Account Type Name
-    SELECT Type_name INTO v_Old_Type_Name FROM Account_Type WHERE Type_ID = OLD.Type_ID;
+    SELECT Type_name INTO v_Old_Type_Name 
+    FROM Account_Type 
+    WHERE Type_ID = OLD.Type_ID;
 
     -- Get the old Position Name
-    SELECT Position_name INTO v_Old_Position_Name FROM Position_List WHERE Position_ID = OLD.Position_ID;
+    SELECT Position_name INTO v_Old_Position_Name 
+    FROM Position_List 
+    WHERE Position_ID = OLD.Position_ID;
 
     -- Insert into System_Log
     INSERT INTO System_Log (
@@ -613,16 +661,17 @@ BEGIN
         'DELETE', 
         'Accounts', 
         OLD.Account_ID, 
-        OLD.Username, 
+        Concat(OLD.Account_ID, OLD.Username, OLD.Type_ID, OLD.Position_ID, 
+			OLD.FirstName, IFNULL(OLD.MiddleName, 'NULL'), OLD.LastName),
         'N/A', 
         CONCAT(
-            'Deleted account: Username="', OLD.Username, '"',
-            ', Type="', v_Old_Type_Name, '"',
-            ', Position="', v_Old_Position_Name, '"',
-            ', FirstName="', OLD.FirstName, '"',
-            ', MiddleName="', IFNULL(OLD.MiddleName, 'NULL'), '"',
-            ', LastName="', OLD.LastName, '"',
-            ' at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
+            'Deleted account | Username: ', OLD.Username,
+            ' | Type: ', v_Old_Type_Name,
+            ' | Position: ', v_Old_Position_Name,
+            ' | FirstName: ', OLD.FirstName,
+            ' | MiddleName: ', IFNULL(OLD.MiddleName, 'N/A'),
+            ' | LastName: ', OLD.LastName,
+            ' | at (', DATE_FORMAT(NOW(), '%H:%i:%s - %m/%d/%Y'), ')'
         )
     );
 END //
