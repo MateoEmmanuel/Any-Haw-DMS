@@ -1,0 +1,180 @@
+/* Reset spacing */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Navbar styling */
+.navbar {
+  background-color: #ff6600;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 30px;
+}
+
+.logo h1 {
+  margin: 0;
+  font-family: 'Georgia', serif;
+  font-size: 28px;
+}
+
+.logo .tagline {
+  font-size: 12px;
+  background-color: #990000;
+  padding: 4px 8px;
+  margin-top: 4px;
+  display: inline-block;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+}
+
+.nav-links a,
+.nav-links .login-btn {
+  color: white;
+  text-decoration: none;
+  margin: 0 15px;
+  font-weight: bold;
+  font-size: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Remove dark‑red background from login/register button */
+.nav-links .login-btn {
+  background: none;    /* no more dark‑red box */
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+/* Search bar using emoji */
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: #ffa366;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.search-bar input {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+  background-color: #ffa366;
+  color: #333;
+  font-size: 16px;
+  flex: 1;
+}
+
+.search-bar button {
+  background: none;
+  border: none;
+  padding: 0 8px;
+  font-size: 20px; /* Perfect emoji size */
+  cursor: pointer;
+}
+
+/* Hero background */
+.hero {
+  background-image: url('images/anyhaw.jpg'); /* Make sure this image exists */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  width: 100%;
+}
+
+/* Login/Register form styling */
+.login-register {
+  max-width: 400px;
+  margin: 0 auto;
+  background: #fff4e6;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.login-register h2 {
+  margin-top: 0;
+  text-align: center;
+  color: #333;
+}
+
+.login-register form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-register input {
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.login-register button {
+  background-color: #ff6600;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin-top: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.login-register p {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #990000;
+}
+
+/* ===== ADDITIONAL for login/register container spacing ===== */
+.login-container {
+  padding: 40px 20px;
+  background-color: #fffaf3;
+}
+
+/* ===== Modal styles ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  position: relative;
+  min-width: 300px;
+  max-width: 90%;
+}
+
+.modal-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
